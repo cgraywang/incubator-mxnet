@@ -21,7 +21,7 @@ import math
 import mxnet as mx
 from mxnet import gluon, autograd
 from mxnet.gluon import contrib
-import model
+from mxnet.gluon.model_zoo.text.lm import RNNModel
 import data
 
 parser = argparse.ArgumentParser(description='MXNet Autograd RNN/LSTM Language Model on Wikitext-2.')
@@ -106,8 +106,8 @@ test_data = gluon.data.DataLoader(test_dataset,
 
 
 ntokens = len(vocab)
-model = model.RNNModel(args.model, ntokens, args.emsize, args.nhid,
-                       args.nlayers, args.dropout, args.tied)
+model = RNNModel(args.model, vocab, args.emsize, args.nhid,
+                 args.nlayers, args.dropout, args.tied)
 model.collect_params().initialize(mx.init.Xavier(), ctx=context)
 
 compression_params = None if args.gctype == 'none' else {'type': args.gctype, 'threshold': args.gcthreshold}
@@ -150,11 +150,12 @@ def train():
         hidden = model.begin_state(func=mx.nd.zeros, batch_size=args.batch_size, ctx=context)
         for i, (data, target) in enumerate(train_data):
             data = data.as_in_context(context).T
-            target = target.as_in_context(context).T.reshape((-1, 1))
+            target = target.as_in_context(context).T
             hidden = detach(hidden)
             with autograd.record():
                 output, hidden = model(data, hidden)
-                L = loss(output, target)
+                L = loss(mx.nd.reshape(output, (-3, -1)),
+                         mx.nd.reshape(target, (-1, 1)))
                 L.backward()
 
             grads = [p.grad(context) for p in model.collect_params().values()]
