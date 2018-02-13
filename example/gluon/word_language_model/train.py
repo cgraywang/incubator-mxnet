@@ -23,7 +23,6 @@ from mxnet import gluon, autograd
 from mxnet.gluon import contrib
 from mxnet.gluon.model_zoo.text.lm import RNNModel
 from mxnet.gluon.model_zoo.text.lm import AWDLSTM
-import data
 
 parser = argparse.ArgumentParser(description='MXNet Autograd RNN/LSTM Language Model on Wikitext-2.')
 parser.add_argument('--model', type=str, default='lstm',
