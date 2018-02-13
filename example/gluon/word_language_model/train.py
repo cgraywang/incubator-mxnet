@@ -22,11 +22,14 @@ import mxnet as mx
 from mxnet import gluon, autograd
 from mxnet.gluon import contrib
 from mxnet.gluon.model_zoo.text.lm import RNNModel
+from mxnet.gluon.model_zoo.text.lm import AWDLSTM
 import data
 
 parser = argparse.ArgumentParser(description='MXNet Autograd RNN/LSTM Language Model on Wikitext-2.')
 parser.add_argument('--model', type=str, default='lstm',
                     help='type of recurrent net (rnn_tanh, rnn_relu, lstm, gru)')
+parser.add_argument('--awd', type=str, default='true',
+                    help='Whether to apply awd (true, false)')
 parser.add_argument('--emsize', type=int, default=200,
                     help='size of word embeddings')
 parser.add_argument('--nhid', type=int, default=200,
@@ -45,6 +48,14 @@ parser.add_argument('--bptt', type=int, default=35,
                     help='sequence length')
 parser.add_argument('--dropout', type=float, default=0.2,
                     help='dropout applied to layers (0 = no dropout)')
+parser.add_argument('--dropout_h', type=float, default=0.2,
+                    help='dropout applied to hidden layer (0 = no dropout)')
+parser.add_argument('--dropout_i', type=float, default=0.2,
+                    help='dropout applied to input layer (0 = no dropout)')
+parser.add_argument('--dropout_e', type=float, default=0.2,
+                    help='dropout applied to embedding layer (0 = no dropout)')
+parser.add_argument('--weight_dropout', type=float, default=0.2,
+                    help='weight dropout applied to h2h weight matrix (0 = no weight dropout)')
 parser.add_argument('--tied', action='store_true',
                     help='tie the word embedding and softmax weights')
 parser.add_argument('--cuda', action='store_true',
@@ -106,9 +117,14 @@ test_data = gluon.data.DataLoader(test_dataset,
 
 
 ntokens = len(vocab)
-model = RNNModel(args.model, vocab, args.emsize, args.nhid,
+if args.awd == 'true':
+    model = AWDLSTM(args.model, vocab, args.emsize, args.nhid, args.nlayers,
+                 args.dropout, args.dropout_h, args.dropout_i, args.dropout_e, args.weight_dropout,
+                 args.tied)
+else:
+    model = RNNModel(args.model, vocab, args.emsize, args.nhid,
                  args.nlayers, args.dropout, args.tied)
-model.collect_params().initialize(mx.init.Xavier(), ctx=context)
+    model.collect_params().initialize(mx.init.Xavier(), ctx=context)
 
 compression_params = None if args.gctype == 'none' else {'type': args.gctype, 'threshold': args.gcthreshold}
 trainer = gluon.Trainer(model.collect_params(), 'sgd',
