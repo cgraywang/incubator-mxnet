@@ -88,21 +88,21 @@ val_dataset, test_dataset = [contrib.data.text.WikiText2('./data', segment,
                                                          seq_len=args.bptt)
                              for segment in ['validation', 'test']]
 
-nbatch_train = len(train_dataset) / args.batch_size
+nbatch_train = len(train_dataset) // args.batch_size
 train_data = gluon.data.DataLoader(train_dataset,
                                    batch_size=args.batch_size,
                                    sampler=contrib.data.IntervalSampler(len(train_dataset),
                                                                         nbatch_train),
                                    last_batch='discard')
 
-nbatch_val = len(val_dataset) / args.batch_size
+nbatch_val = len(val_dataset) // args.batch_size
 val_data = gluon.data.DataLoader(val_dataset,
                                  batch_size=args.batch_size,
                                  sampler=contrib.data.IntervalSampler(len(val_dataset),
                                                                       nbatch_val),
                                  last_batch='discard')
 
-nbatch_test = len(test_dataset) / args.batch_size
+nbatch_test = len(test_dataset) // args.batch_size
 test_data = gluon.data.DataLoader(test_dataset,
                                   batch_size=args.batch_size,
                                   sampler=contrib.data.IntervalSampler(len(test_dataset),
@@ -150,9 +150,11 @@ def eval(data_source):
     hidden = model.begin_state(func=mx.nd.zeros, batch_size=args.batch_size, ctx=context)
     for i, (data, target) in enumerate(data_source):
         data = data.as_in_context(context).T
-        target = target.as_in_context(context).T.reshape((-1, 1))
+       # target = target.as_in_context(context).T.reshape((-1, 1))
         output, hidden = model(data, hidden)
-        L = loss(output, target)
+#         L = loss(output, target)
+        L = loss(mx.nd.reshape(output, (-3, -1)),
+                         mx.nd.reshape(target, (-1, 1)))
         total_L += mx.nd.sum(L).asscalar()
         ntotal += L.size
     return total_L / ntotal
