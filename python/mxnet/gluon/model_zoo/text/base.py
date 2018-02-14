@@ -103,13 +103,15 @@ def _apply_weight_drop_to_rnn_layer(block, rate, mode = 'training'):
     params = block.collect_params('.*_h2h_weight')
     print("params")
     print(params.items())
-#     for key, value in params.items():
-#         if mode == 'training':
-#             weight_dropped_params = WeightDropParameter(value, rate, mode)
-#             block.params[key] = weight_dropped_params.data()
-#         else:
-#             weight_dropped_params = WeightDropParameter(value, rate, mode)
-#             block.params[key] = weight_dropped_params.data()
+    for key, value in params.items():
+        if mode == 'training':
+            weight_dropped_params = WeightDropParameter(value, rate, mode)
+            block.params[key] = weight_dropped_params.data()
+        else:
+            weight_dropped_params = WeightDropParameter(value, rate, mode)
+            block.params[key] = weight_dropped_params.data()
+        print("block.params")
+        print(block.params.items())
         
 
 #ignore bidirectional
