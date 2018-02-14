@@ -119,7 +119,7 @@ def get_rnn_layer(mode, num_layers, num_embed, num_hidden, dropout, weight_dropo
     if mode == 'rnn_relu':
         block = rnn.RNN(num_hidden, 'relu', num_layers, dropout=dropout,
                        input_size=num_embed)
-        block.collect_params().initialize(mx.init.Xavier())
+        block.initialize()
         if weight_dropout:
             if training:
                 _apply_weight_drop_to_rnn_layer(block, rate = weight_dropout, mode = 'training')
@@ -130,7 +130,7 @@ def get_rnn_layer(mode, num_layers, num_embed, num_hidden, dropout, weight_dropo
     elif mode == 'rnn_tanh':
         block = rnn.RNN(num_hidden, num_layers, dropout=dropout,
                        input_size=num_embed)
-        block.collect_params().initialize(mx.init.Xavier())
+        block.initialize()
         if weight_dropout:
             if training:
                 _apply_weight_drop_to_rnn_layer(block, rate = weight_dropout, mode = 'training')
@@ -140,7 +140,7 @@ def get_rnn_layer(mode, num_layers, num_embed, num_hidden, dropout, weight_dropo
     elif mode == 'lstm':
         block = rnn.LSTM(num_hidden, num_layers, dropout=dropout,
                         input_size=num_embed)
-        block.collect_params().initialize(mx.init.Xavier())
+        block.initialize()
         if weight_dropout:
             if training:
                 _apply_weight_drop_to_rnn_layer(block, rate = weight_dropout, mode = 'training')
@@ -150,7 +150,7 @@ def get_rnn_layer(mode, num_layers, num_embed, num_hidden, dropout, weight_dropo
     elif mode == 'gru':
         block = rnn.GRU(num_hidden, num_layers, dropout=dropout,
                        input_size=num_embed)
-        block.collect_params().initialize(mx.init.Xavier())
+        block.initialize()
         if weight_dropout:
             if training:
                 _apply_weight_drop_to_rnn_layer(block, rate = weight_dropout, mode = 'training')
