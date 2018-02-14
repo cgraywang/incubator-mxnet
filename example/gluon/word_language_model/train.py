@@ -151,9 +151,10 @@ def eval(data_source):
     hidden = model.begin_state(func=mx.nd.zeros, batch_size=args.batch_size, ctx=context)
     for i, (data, target) in enumerate(data_source):
         data = data.as_in_context(context).T
+        target = target.as_in_context(context).T
         output, hidden = model(data, hidden)
         L = loss(mx.nd.reshape(output, (-3, -1)),
-                         mx.nd.reshape(target, (-1, 1)))
+                 mx.nd.reshape(target, (-1, 1)))
         total_L += mx.nd.sum(L).asscalar()
         ntotal += L.size
     return total_L / ntotal
