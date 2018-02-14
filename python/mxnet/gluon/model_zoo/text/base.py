@@ -102,7 +102,7 @@ def _apply_weight_drop_to_rnn_layer(block, rate, mode = 'training'):
     #values
     params = block.collect_params('.*_h2h_weight')
     print("params")
-    print(params)
+    print(params.items())
 #     for key, value in params.items():
 #         if mode == 'training':
 #             weight_dropped_params = WeightDropParameter(value, rate, mode)
