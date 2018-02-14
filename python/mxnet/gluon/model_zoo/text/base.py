@@ -51,13 +51,14 @@ class _StepwiseSeq2SeqModel(gluon.Block):
         return out, state
     
     
-def _apply_weight_drop(block, rate, mode = 'training'):
+def _apply_weight_drop_to_rnn_cell(block, rate, mode = 'training'):
     params = block.collect_params('h2h_weight').values()
     if mode == 'training':
-        weight_dropped_params = WeightDropParameter(params, rate, mode = "training")
+        weight_dropped_params = WeightDropParameter(params['h2h_weight'], rate, mode)
     else:
-        weight_dropped_params = WeightDropParameter(params, rate, mode = "always")
-    return weight_dropped_params.data()
+        weight_dropped_params = WeightDropParameter(params['h2h_weight'], rate, mode)
+    block.params['h2h_weight'] = weight_dropped_params.data()
+    
     
 
 def get_rnn_cell(mode, num_layers, num_hidden,
@@ -86,63 +87,66 @@ def get_rnn_cell(mode, num_layers, num_hidden,
     
     if weight_dropout:
         if training:
-            weight_dropout_params_data = _apply_weight_drop(rnn_cell, rate = weight_dropout, mode = 'training')
+            _apply_weight_drop_to_rnn_cell(rnn_cell, rate = weight_dropout, mode = 'training')
         else:
-            weight_dropout_params_data = _apply_weight_drop(rnn_cell, rate = weight_dropout, mode = 'always')
+            _apply_weight_drop_to_rnn_cell(rnn_cell, rate = weight_dropout, mode = 'always')
+            
         #rnn_cell.initialize(init=weight_dropped_params_data)
-        rnn_cell.collect_params().setattr('h2h_weight', weight_dropout_params_data)
+#         TODO: refer source code
+#         rnn_cell.collect_params().setattr('h2h_weight', weight_dropout_params_data)
     
     return rnn_cell
 
 
-def _apply_weight_drop_l2h(block, rate, mode = 'training'):
-    params = block.collect_params().get('l2h_weight')
-    if mode == 'training':
-        weight_dropped_params = WeightDropParameter(params, rate, mode = "training")
-    else:
-        weight_dropped_params = WeightDropParameter(params, rate, mode = "always")
-    return weight_dropped_params.data()
+def _apply_weight_drop_to_rnn_layer(block, rate, mode = 'training'):
+    params = block.collect_params('*_h2h_weight').values()
+    for key, value in params.items():
+        if mode == 'training':
+            weight_dropped_params = WeightDropParameter(value, rate, mode)
+            block.params[key] = weight_dropped_params.data()
+        else:
+            weight_dropped_params = WeightDropParameter(value, rate, mode)
+            block.params[key] = weight_dropped_params.data()
+        
 
+#ignore bidirectional
 def get_rnn_layer(mode, num_layers, num_embed, num_hidden, dropout, weight_dropout, training = True):
     if mode == 'rnn_relu':
         block = rnn.RNN(num_hidden, 'relu', num_layers, dropout=dropout,
                        input_size=num_embed)
         if weight_dropout:
             if training:
-                weight_dropout_params_data = _apply_weight_drop_l2h(block, rate = weight_dropout, mode = 'training')
+                _apply_weight_drop_to_rnn_layer(block, rate = weight_dropout, mode = 'training')
             else:
-                weight_dropout_params_data = _apply_weight_drop_l2h(block, rate = weight_dropout, mode = 'always')
-            block.collect_params().setattr('i2h_weight', weight_dropout_params_data)
+                _apply_weight_drop_to_rnn_layer(block, rate = weight_dropout, mode = 'always')
+#             block.collect_params().setattr('i2h_weight', weight_dropout_params_data)
         return block
     elif mode == 'rnn_tanh':
         block = rnn.RNN(num_hidden, num_layers, dropout=dropout,
                        input_size=num_embed)
         if weight_dropout:
             if training:
-                weight_dropout_params_data = _apply_weight_drop_l2h(block, rate = weight_dropout, mode = 'training')
+                _apply_weight_drop_to_rnn_layer(block, rate = weight_dropout, mode = 'training')
             else:
-                weight_dropout_params_data = _apply_weight_drop_l2h(block, rate = weight_dropout, mode = 'always')
-            block.collect_params().setattr('i2h_weight', weight_dropout_params_data)
+                _apply_weight_drop_to_rnn_layer(block, rate = weight_dropout, mode = 'always')
         return block
     elif mode == 'lstm':
         block = rnn.LSTM(num_hidden, num_layers, dropout=dropout,
                         input_size=num_embed)
         if weight_dropout:
             if training:
-                weight_dropout_params_data = _apply_weight_drop_l2h(block, rate = weight_dropout, mode = 'training')
+                _apply_weight_drop_to_rnn_layer(block, rate = weight_dropout, mode = 'training')
             else:
-                weight_dropout_params_data = _apply_weight_drop_l2h(block, rate = weight_dropout, mode = 'always')
-            block.collect_params().setattr('i2h_weight', weight_dropout_params_data)
+                _apply_weight_drop_to_rnn_layer(block, rate = weight_dropout, mode = 'always')
         return block
     elif mode == 'gru':
         block = rnn.GRU(num_hidden, num_layers, dropout=dropout,
                        input_size=num_embed)
         if weight_dropout:
             if training:
-                weight_dropout_params_data = _apply_weight_drop_l2h(block, rate = weight_dropout, mode = 'training')
+                _apply_weight_drop_to_rnn_layer(block, rate = weight_dropout, mode = 'training')
             else:
-                weight_dropout_params_data = _apply_weight_drop_l2h(block, rate = weight_dropout, mode = 'always')
-            block.collect_params().setattr('i2h_weight', weight_dropout_params_data)
+                _apply_weight_drop_to_rnn_layer(block, rate = weight_dropout, mode = 'always')
         return block
     
     

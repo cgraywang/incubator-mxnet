@@ -123,7 +123,8 @@ if args.awd == 'true':
 else:
     model = RNNModel(args.model, vocab, args.emsize, args.nhid,
                  args.nlayers, args.dropout, args.tied)
-    model.collect_params().initialize(mx.init.Xavier(), ctx=context)
+#initialization
+model.collect_params().initialize(mx.init.Xavier(), ctx=context)
 
 compression_params = None if args.gctype == 'none' else {'type': args.gctype, 'threshold': args.gcthreshold}
 trainer = gluon.Trainer(model.collect_params(), 'sgd',
@@ -150,9 +151,7 @@ def eval(data_source):
     hidden = model.begin_state(func=mx.nd.zeros, batch_size=args.batch_size, ctx=context)
     for i, (data, target) in enumerate(data_source):
         data = data.as_in_context(context).T
-       # target = target.as_in_context(context).T.reshape((-1, 1))
         output, hidden = model(data, hidden)
-#         L = loss(output, target)
         L = loss(mx.nd.reshape(output, (-3, -1)),
                          mx.nd.reshape(target, (-1, 1)))
         total_L += mx.nd.sum(L).asscalar()
