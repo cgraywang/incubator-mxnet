@@ -94,6 +94,10 @@ def get_rnn_cell(mode, num_layers, num_hidden,
 def _apply_weight_drop_to_rnn_layer(block, rate, mode = 'training'):
     params = block.collect_params('.*_h2h_weight')
     for key, value in params.items():
+        print("key")
+        print(key)
+        print("value")
+        print(value)
         weight_dropped_params = WeightDropParameter(value, rate, mode)
         block.params[key] = weight_dropped_params
         
