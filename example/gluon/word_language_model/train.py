@@ -116,6 +116,11 @@ test_data = gluon.data.DataLoader(test_dataset,
 
 
 ntokens = len(vocab)
+
+
+
+
+
 if args.awd == 'true':
     model = AWDLSTM(args.model, vocab, args.emsize, args.nhid, args.nlayers,
                  args.dropout, args.dropout_h, args.dropout_i, args.dropout_e, args.weight_dropout,
@@ -123,14 +128,17 @@ if args.awd == 'true':
 else:
     model = RNNModel(args.model, vocab, args.emsize, args.nhid,
                  args.nlayers, args.dropout, args.tied)
+    
 #initialization
-model.collect_params().initialize(mx.init.Xavier(), ctx=context)
+# model.collect_params().initialize(mx.init.Xavier(), ctx=context)
+
 print("model.collect_params().items()")
 print(model.collect_params().items())
 print("model.params._params.items()")
 print(model.params._params.items())
 print("model.params._shared")
 print(model.params._shared)
+
 
 compression_params = None if args.gctype == 'none' else {'type': args.gctype, 'threshold': args.gcthreshold}
 trainer = gluon.Trainer(model.collect_params(), 'sgd',
