@@ -130,7 +130,7 @@ else:
                  args.nlayers, args.dropout, args.tied)
     
 #initialization
-# model.collect_params().initialize(mx.init.Xavier(), ctx=context)
+model.collect_params().initialize(mx.init.Xavier(), ctx=context)
 
 # print("model.collect_params().items()")
 # print(model.collect_params().items())

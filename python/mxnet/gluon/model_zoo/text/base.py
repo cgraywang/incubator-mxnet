@@ -99,8 +99,8 @@ def _apply_weight_drop_to_rnn_layer(block, rate, mode = 'training'):
         weight_dropped_params = WeightDropParameter(value, rate, mode)
         block.params._params[key] = weight_dropped_params
         block._unfused.params._params[key] = weight_dropped_params
-#         for children_block in block._children:
-#             children_block.params._params[key] = weight_dropped_params
+        for children_block in block._children:
+            children_block.params._params[key] = weight_dropped_params
 #         block.params._shared._params[key] = weight_dropped_params
 #     print("block.params._params.items()")
 #     print(block.params._params.items())
