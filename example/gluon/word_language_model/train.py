@@ -132,12 +132,12 @@ else:
 #initialization
 # model.collect_params().initialize(mx.init.Xavier(), ctx=context)
 
-print("model.collect_params().items()")
-print(model.collect_params().items())
-print("model.params._params.items()")
-print(model.params._params.items())
-print("model.params._shared")
-print(model.params._shared)
+# print("model.collect_params().items()")
+# print(model.collect_params().items())
+# print("model.params._params.items()")
+# print(model.params._params.items())
+# print("model.params._shared")
+# print(model.params._shared)
 
 
 compression_params = None if args.gctype == 'none' else {'type': args.gctype, 'threshold': args.gcthreshold}
