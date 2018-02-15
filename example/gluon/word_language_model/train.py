@@ -133,13 +133,13 @@ else:
 model.collect_params().initialize(mx.init.Xavier(), ctx=context)
 
 print("model.collect_params().items()")
-print(model.collect_params().items())
+model.collect_params().items()
 type(model.collect_params())
 print("model.params._params.items()")
-print(model.params._params.items())
-type(model.params._params.items())
+model.params._params.items()
+type(model.params._params)
 print("model.params._shared")
-print(model.params._shared)
+model.params._shared
 type(model.params._shared)
 
 
