@@ -98,11 +98,13 @@ def _apply_weight_drop_to_rnn_layer(block, rate, mode = 'training'):
     for key, value in params.items():
         weight_dropped_params = WeightDropParameter(value, rate, mode)
         block.params._params[key] = weight_dropped_params
+        for children_block in enumerate(block._children):
+            children_block.params._params[key] = weight_dropped_params
 #         block.params._shared._params[key] = weight_dropped_params
-    print("block.params._params.items()")
-    print(block.params._params.items())
-    print("block.params._shared")
-    print(block.params._shared)
+#     print("block.params._params.items()")
+#     print(block.params._params.items())
+#     print("block.params._shared")
+#     print(block.params._shared)
 
 #ignore bidirectional
 def get_rnn_layer(mode, num_layers, num_embed, num_hidden, dropout, weight_dropout, training = True):
