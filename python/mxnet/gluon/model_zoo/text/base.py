@@ -99,7 +99,7 @@ def _apply_weight_drop_to_rnn_layer(block, rate, mode = 'training'):
         print("value")
         print(value)
         weight_dropped_params = WeightDropParameter(value, rate, mode)
-        block._params[key] = weight_dropped_params
+        block.params._params[key] = weight_dropped_params
         
 
 #ignore bidirectional
