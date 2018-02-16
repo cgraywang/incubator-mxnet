@@ -95,16 +95,16 @@ def _print_debug_infor(block, mode):
     print(mode + ":")
     
     print("block.collect_params().items():")
-    block.collect_params().items()
-    block.collect_params().__dict__
+    print(block.collect_params().items())
+    print(block.collect_params().__dict__)
     
     print("block.params._params.items():")
-    block.params._params.items()
-    block.params._params.__dict__
+    print(block.params._params.items())
+    print(block.params._params.__dict__)
     
     print("block._unfused.params._params.items():")
-    block._unfused.params._params.items()
-    block._unfused.params._params.__dict__
+    print(block._unfused.params._params.items())
+    print(block._unfused.params._params.__dict__)
 
 
 def _apply_weight_drop_to_rnn_layer(block, rate, mode = 'training'):
