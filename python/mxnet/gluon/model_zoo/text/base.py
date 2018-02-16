@@ -98,8 +98,8 @@ def _apply_weight_drop_to_rnn_layer(block, rate, mode = 'training'):
     for key, value in params.items():
         weight_dropped_params = WeightDropParameter(value, rate, mode)
         block.params._params[key] = weight_dropped_params
-        for child_block in block._children:
-            child_block.params._params[key] = weight_dropped_params
+#         for child_block in block._children:
+#             child_block.params._params[key] = weight_dropped_params
         
         block._unfused.params._params[key] = weight_dropped_params
         for cell_block in block._unfused:
