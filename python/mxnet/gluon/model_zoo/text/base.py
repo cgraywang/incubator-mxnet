@@ -93,21 +93,28 @@ def get_rnn_cell(mode, num_layers, num_hidden,
 
 def _apply_weight_drop_to_rnn_layer(block, rate, mode = 'training'):
     params = block.collect_params('.*_h2h_weight')
-    print("params.items()")
-    print(params.items())
+    
+    print("params.items():")
+    params.items()
+    
     for key, value in params.items():
         weight_dropped_params = WeightDropParameter(value, rate, mode)
         block.params._params[key] = weight_dropped_params
-#         for child_block in block._children:
-#             child_block.params._params[key] = weight_dropped_params
+        for child_block in block._children:
+            child_block.params._params[key] = weight_dropped_params
         
-#         block._unfused.params._params[key] = weight_dropped_params
+        block._unfused.params._params[key] = weight_dropped_params
         for cell_block in block._unfused:
             cell_block.params._params[key] = weight_dropped_params
         
 #         block.params._shared._params[key] = weight_dropped_params
-#     print("block.params._params.items()")
-#     print(block.params._params.items())
+
+    print("block.params._params.items():")
+    block.params._params.items()
+    
+    print("block._unfused.params._params.items():")
+    block._unfused.params._params.items()
+    
 #     print("block.params._shared")
 #     print(block.params._shared)
 
