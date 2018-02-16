@@ -94,8 +94,8 @@ def get_rnn_cell(mode, num_layers, num_hidden,
 def _apply_weight_drop_to_rnn_layer(block, rate, mode = 'training'):
     params = block.collect_params('.*_h2h_weight')
     
-    print("params.items():")
-    params.items()
+#     print("params.items():")
+#     params.items()
     
     for key, value in params.items():
         weight_dropped_params = WeightDropParameter(value, rate, mode)
@@ -109,11 +109,11 @@ def _apply_weight_drop_to_rnn_layer(block, rate, mode = 'training'):
         
 #         block.params._shared._params[key] = weight_dropped_params
 
-    print("block.params._params.items():")
-    block.params._params.items()
+#     print("block.params._params.items():")
+#     block.params._params.items()
     
-    print("block._unfused.params._params.items():")
-    block._unfused.params._params.items()
+#     print("block._unfused.params._params.items():")
+#     block._unfused.params._params.items()
     
 #     print("block.params._shared")
 #     print(block.params._shared)
@@ -132,11 +132,35 @@ def get_rnn_layer(mode, num_layers, num_embed, num_hidden, dropout, weight_dropo
     elif mode == 'gru':
         block = rnn.GRU(num_hidden, num_layers, dropout=dropout,
                        input_size=num_embed)
+    
+    print("BEFORE:")
+    
+    print("block.collect_params().items():")
+    block.collect_params().items()
+    
+    print("block.params._params.items():")
+    block.params._params.items()
+    
+    print("block._unfused.params._params.items():")
+    block._unfused.params._params.items()
+    
     if weight_dropout:
         if training:
             _apply_weight_drop_to_rnn_layer(block, rate = weight_dropout, mode = 'training')
         else:
             _apply_weight_drop_to_rnn_layer(block, rate = weight_dropout, mode = 'always')
+            
+    print("AFTER:")
+    
+    print("block.collect_params().items():")
+    block.collect_params().items()
+    
+    print("block.params._params.items():")
+    block.params._params.items()
+    
+    print("block._unfused.params._params.items():")
+    block._unfused.params._params.items()
+    
     return block
     
 
