@@ -103,7 +103,7 @@ def _apply_weight_drop_to_rnn_layer(block, rate, mode = 'training'):
         
 #         block._unfused.params._params[key] = weight_dropped_params
         for cell_block in block._unfused:
-            cell_block.params._params['h2h_weight'] = weight_dropped_params
+            cell_block.params._params[key] = weight_dropped_params
         
 #         block.params._shared._params[key] = weight_dropped_params
 #     print("block.params._params.items()")
