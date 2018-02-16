@@ -62,9 +62,9 @@ class AWDLSTM(_StepwiseSeq2SeqModel):
     def _get_decoder(self):
         vocab_size = len(self._out_vocab)
         if self._tie_weights:
-            output = nn.Dense(vocab_size, params=self.embedding.params)
+            output = nn.Dense(vocab_size, flatten=False, params=self.embedding.params)
         else:
-            output = nn.Dense(vocab_size)
+            output = nn.Dense(vocab_size, flatten=False)
         return output
 
     def begin_state(self, *args, **kwargs):
