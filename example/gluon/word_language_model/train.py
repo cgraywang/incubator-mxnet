@@ -45,15 +45,15 @@ parser.add_argument('--batch_size', type=int, default=32, metavar='N',
                     help='batch size')
 parser.add_argument('--bptt', type=int, default=35,
                     help='sequence length')
-parser.add_argument('--dropout', type=float, default=0.2,
+parser.add_argument('--dropout', type=float, default=0.5,
                     help='dropout applied to layers (0 = no dropout)')
-parser.add_argument('--dropout_h', type=float, default=0.2,
+parser.add_argument('--dropout_h', type=float, default=0.5,
                     help='dropout applied to hidden layer (0 = no dropout)')
-parser.add_argument('--dropout_i', type=float, default=0.2,
+parser.add_argument('--dropout_i', type=float, default=0.5,
                     help='dropout applied to input layer (0 = no dropout)')
-parser.add_argument('--dropout_e', type=float, default=0.2,
+parser.add_argument('--dropout_e', type=float, default=0.1,
                     help='dropout applied to embedding layer (0 = no dropout)')
-parser.add_argument('--weight_dropout', type=float, default=0.2,
+parser.add_argument('--weight_dropout', type=float, default=0.5,
                     help='weight dropout applied to h2h weight matrix (0 = no weight dropout)')
 parser.add_argument('--tied', action='store_true',
                     help='tie the word embedding and softmax weights')

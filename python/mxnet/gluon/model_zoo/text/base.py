@@ -125,11 +125,11 @@ def get_rnn_layer(mode, num_layers, num_embed, num_hidden, dropout, weight_dropo
     elif mode == 'gru':
         block = rnn.GRU(num_hidden, num_layers, dropout=dropout,
                        input_size=num_embed)
-#     if weight_dropout:
-#         if training:
-#             _apply_weight_drop_to_rnn_layer(block, rate = weight_dropout, mode = 'training')
-#         else:
-#             _apply_weight_drop_to_rnn_layer(block, rate = weight_dropout, mode = 'always')
+    if weight_dropout:
+        if training:
+            _apply_weight_drop_to_rnn_layer(block, rate = weight_dropout, mode = 'training')
+        else:
+            _apply_weight_drop_to_rnn_layer(block, rate = weight_dropout, mode = 'always')
     return block
     
 
