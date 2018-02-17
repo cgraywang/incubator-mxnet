@@ -21,39 +21,38 @@ import math
 import mxnet as mx
 from mxnet import gluon, autograd
 from mxnet.gluon import contrib
-from mxnet.gluon.model_zoo.text.lm import RNNModel
-from mxnet.gluon.model_zoo.text.lm import AWDLSTM
+from mxnet.gluon.model_zoo.text.lm import RNNModel, AWDLSTM
 
 parser = argparse.ArgumentParser(description='MXNet Autograd RNN/LSTM Language Model on Wikitext-2.')
 parser.add_argument('--model', type=str, default='lstm',
-                    help='type of recurrent net (rnn_tanh, rnn_relu, lstm, gru)')
-parser.add_argument('--awd', type=str, default='true',
-                    help='Whether to apply awd (true, false)')
-parser.add_argument('--emsize', type=int, default=200,
+                    help='type of recurrent net (rnn_tanh, rnn_relu, lstm, gru, awd-lstm)')
+# parser.add_argument('--awd', type=str, default='true',
+#                     help='Whether to apply awd (true, false)')
+parser.add_argument('--emsize', type=int, default=400,
                     help='size of word embeddings')
-parser.add_argument('--nhid', type=int, default=200,
+parser.add_argument('--nhid', type=int, default=1150,
                     help='number of hidden units per layer')
-parser.add_argument('--nlayers', type=int, default=1,
+parser.add_argument('--nlayers', type=int, default=3,
                     help='number of layers')
-parser.add_argument('--lr', type=float, default=1.0,
+parser.add_argument('--lr', type=float, default=30,
                     help='initial learning rate')
-parser.add_argument('--clip', type=float, default=0.2,
+parser.add_argument('--clip', type=float, default=0.25,
                     help='gradient clipping')
 parser.add_argument('--epochs', type=int, default=40,
                     help='upper epoch limit')
-parser.add_argument('--batch_size', type=int, default=32, metavar='N',
+parser.add_argument('--batch_size', type=int, default=80, metavar='N',
                     help='batch size')
 parser.add_argument('--bptt', type=int, default=35,
                     help='sequence length')
-parser.add_argument('--dropout', type=float, default=0.5,
+parser.add_argument('--dropout', type=float, default=0.4,
                     help='dropout applied to layers (0 = no dropout)')
-parser.add_argument('--dropout_h', type=float, default=0.5,
+parser.add_argument('--dropout_h', type=float, default=0.3,
                     help='dropout applied to hidden layer (0 = no dropout)')
-parser.add_argument('--dropout_i', type=float, default=0.5,
+parser.add_argument('--dropout_i', type=float, default=0.4,
                     help='dropout applied to input layer (0 = no dropout)')
 parser.add_argument('--dropout_e', type=float, default=0.1,
                     help='dropout applied to embedding layer (0 = no dropout)')
-parser.add_argument('--weight_dropout', type=float, default=0.5,
+parser.add_argument('--weight_dropout', type=float, default=0.65,
                     help='weight dropout applied to h2h weight matrix (0 = no weight dropout)')
 parser.add_argument('--tied', action='store_true',
                     help='tie the word embedding and softmax weights')
@@ -121,7 +120,7 @@ ntokens = len(vocab)
 
 
 
-if args.awd == 'true':
+if args.model == 'awd-lstm':
     model = AWDLSTM(args.model, vocab, args.emsize, args.nhid, args.nlayers,
                  args.dropout, args.dropout_h, args.dropout_i, args.dropout_e, args.weight_dropout,
                  args.tied)
