@@ -129,16 +129,6 @@ else:
 #initialization
 model.collect_params().initialize(mx.init.Xavier(), ctx=context)
 
-# print("model.collect_params().items()")
-# model.collect_params().byindex(0).context
-# type(model.collect_params())
-# print("model.params._params.items()")
-# model.params._params.byindex(0).context
-# type(model.params._params)
-# print("model.params._shared")
-# model.params._shared.context
-# type(model.params._shared)
-
 
 compression_params = None if args.gctype == 'none' else {'type': args.gctype, 'threshold': args.gcthreshold}
 trainer = gluon.Trainer(model.collect_params(), 'sgd',
