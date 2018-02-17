@@ -26,8 +26,6 @@ from mxnet.gluon.model_zoo.text.lm import RNNModel, AWDLSTM
 parser = argparse.ArgumentParser(description='MXNet Autograd RNN/LSTM Language Model on Wikitext-2.')
 parser.add_argument('--model', type=str, default='lstm',
                     help='type of recurrent net (rnn_tanh, rnn_relu, lstm, gru, awd-lstm)')
-# parser.add_argument('--awd', type=str, default='true',
-#                     help='Whether to apply awd (true, false)')
 parser.add_argument('--emsize', type=int, default=400,
                     help='size of word embeddings')
 parser.add_argument('--nhid', type=int, default=1150,

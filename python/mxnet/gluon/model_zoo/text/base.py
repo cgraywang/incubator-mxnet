@@ -90,78 +90,20 @@ def get_rnn_cell(mode, num_layers, num_hidden,
     
     return rnn_cell
 
-# def _print_debug_infor(block, mode):
-    
-#     print(mode + ":")
-    
-#     print("block.collect_params().items():")
-#     print(block.collect_params().items())
-#     print(block.collect_params().__dict__)
-    
-#     print("block.params._params.items():")
-#     print(block.params._params.items())
-#     print(block.params._params.__dict__)
-    
-#     for c in block._children:
-#         print(c.collect_params().items())
-#         print(c.collect_params().__dict__)
-#         print(c.params._params.items())
-#         print(c.params._params.__dict__)
-    
-#     print("block._unfused.params._params.items():")
-#     print(block._unfused.params._params.items())
-#     print(block._unfused.params._params.__dict__)
-    
-#     for c in block._unfused._children:
-#         print(c.collect_params().items())
-#         print(c.collect_params().__dict__)
-#         print(c.params._params.items())
-#         print(c.params._params.__dict__)
-
 
 def _apply_weight_drop_to_rnn_layer(block, rate, weight_dropout_mode = 'training'):
     params = block.collect_params('.*_h2h_weight')
-    
-#     print("params.items():")
-#     params.items()
 
-
-#     _print_debug_infor(block, 'AFTER')
-    
     for key, value in params.items():
         weight_dropped_params = WeightDropParameter(value, rate, weight_dropout_mode)
         block.collect_params('.*_h2h_weight')._params[key] = weight_dropped_params
-#         block.params._params[key] = weight_dropped_params
         for child_block in block._children:
             child_block.collect_params('.*_h2h_weight')._params[key] = weight_dropped_params
-#             child_block.params._params[key] = weight_dropped_params
             
-#         block._unfused.collect_params('.*_h2h_weight')._params.clear()
         block._unfused.params._params.clear()
         for _unfused_child_block in block._unfused:
             _unfused_child_block.collect_params('.*_h2h_weight')._params[key] = weight_dropped_params
-#             _unfused_child_block.params._params[key] = weight_dropped_params
-        
-#         block._unfused.params._params[key] = weight_dropped_params
-#         for cell_block in block._unfused:
-#             cell_block.params._params[key] = weight_dropped_params
-            
-    
-#     _print_debug_infor(block, 'AFTER 1')
-    
-        
-#         block.params._shared._params[key] = weight_dropped_params
 
-#     print("block.params._params.items():")
-#     block.params._params.items()
-    
-#     print("block._unfused.params._params.items():")
-#     block._unfused.params._params.items()
-    
-#     print("block.params._shared")
-#     print(block.params._shared)
-
-#ignore bidirectional
 def get_rnn_layer(mode, num_layers, num_embed, num_hidden, dropout, weight_dropout, weight_dropout_mode = 'training'):
     if mode == 'rnn_relu':
         block = rnn.RNN(num_hidden, 'relu', num_layers, dropout=dropout,
@@ -176,14 +118,10 @@ def get_rnn_layer(mode, num_layers, num_embed, num_hidden, dropout, weight_dropo
         block = rnn.GRU(num_hidden, num_layers, dropout=dropout,
                        input_size=num_embed)
     elif mode == 'awd-lstm':
-        print("awd-lstm")
         block = rnn.LSTM(num_hidden, num_layers, dropout=dropout,
                         input_size=num_embed)
         if weight_dropout:
             _apply_weight_drop_to_rnn_layer(block, weight_dropout, weight_dropout_mode = weight_dropout_mode)
-            
-#     else:
-#         _print_debug_infor(block, 'AFTER')
     
     return block
     
