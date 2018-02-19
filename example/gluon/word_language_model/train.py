@@ -25,7 +25,7 @@ from mxnet.gluon.model_zoo.text.lm import RNNModel, AWDLSTM
 
 parser = argparse.ArgumentParser(description='MXNet Autograd RNN/LSTM Language Model on Wikitext-2.')
 parser.add_argument('--model', type=str, default='lstm',
-                    help='type of recurrent net (rnn_tanh, rnn_relu, lstm, gru, awd-lstm)')
+                    help='type of recurrent net (rnn_tanh, rnn_relu, lstm, gru)')
 parser.add_argument('--emsize', type=int, default=400,
                     help='size of word embeddings')
 parser.add_argument('--nhid', type=int, default=1150,
@@ -114,11 +114,7 @@ test_data = gluon.data.DataLoader(test_dataset,
 
 ntokens = len(vocab)
 
-
-
-
-
-if args.model == 'awd-lstm':
+if args.weight_dropout:
     model = AWDLSTM(args.model, vocab, args.emsize, args.nhid, args.nlayers,
                  args.dropout, args.dropout_h, args.dropout_i, args.dropout_e, args.weight_dropout,
                  args.tied)
@@ -212,7 +208,9 @@ def train():
             model.collect_params().load(args.save, context)
 
 if __name__ == '__main__':
+    start_time = time.time()
     train()
     model.collect_params().load(args.save, context)
     test_L = eval(test_data)
     print('Best test loss %.2f, test ppl %.2f'%(test_L, math.exp(test_L)))
+    print('Total time cost %.2fs'%(time.time()-start_time))
