@@ -72,8 +72,6 @@ def get_rnn_cell(mode, num_layers, num_hidden,
                 cell = rnn.LSTMCell(num_hidden)
             elif mode == 'gru':
                 cell = rnn.GRUCell(num_hidden)
-            elif mode == 'awd-lstm':
-                cell = rnn.LSTMCell(num_hidden)
             if var_drop_in + var_drop_state + var_drop_out != 0:
                 cell = contrib.rnn.VariationalDropoutCell(cell,
                                                           var_drop_in,
@@ -84,9 +82,8 @@ def get_rnn_cell(mode, num_layers, num_hidden,
             if i != num_layers - 1 and dropout != 0:
                 rnn_cell.add(rnn.DropoutCell(dropout))
             
-            if mode == 'awd-lstm':
-                if weight_dropout:
-                    _apply_weight_drop_to_rnn_cell(rnn_cell, rate = weight_dropout, weight_dropout_mode = weight_dropout_mode)
+            if weight_dropout:
+                _apply_weight_drop_to_rnn_cell(rnn_cell, rate = weight_dropout, weight_dropout_mode = weight_dropout_mode)
     
     return rnn_cell
 
@@ -117,11 +114,8 @@ def get_rnn_layer(mode, num_layers, num_embed, num_hidden, dropout, weight_dropo
     elif mode == 'gru':
         block = rnn.GRU(num_hidden, num_layers, dropout=dropout,
                        input_size=num_embed)
-    elif mode == 'awd-lstm':
-        block = rnn.LSTM(num_hidden, num_layers, dropout=dropout,
-                        input_size=num_embed)
-        if weight_dropout:
-            _apply_weight_drop_to_rnn_layer(block, weight_dropout, weight_dropout_mode = weight_dropout_mode)
+    if weight_dropout:
+        _apply_weight_drop_to_rnn_layer(block, weight_dropout, weight_dropout_mode = weight_dropout_mode)
     
     return block
     
