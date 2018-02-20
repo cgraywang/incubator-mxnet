@@ -74,6 +74,23 @@ args = parser.parse_args()
 # Load data
 ###############################################################################
 
+print("--model=" + args.model)
+print("--emsize=" + args.emsize)
+print("--nhid=" + args.nhid)
+print("--nlayers=" + args.nlayers)
+print("--lr=" + args.lr)
+print("--clip=" + args.clip)
+print("--epochs=" + args.epochs)
+print("--batch_size=" + args.batch_size)
+print("--bptt=" + args.bptt)
+print("--dropout=" + args.dropout)
+print("--dropout_h=" + args.dropout_h)
+print("--dropout_i=" + args.dropout_i)
+print("--dropout_e=" + args.dropout_e)
+print("--weight_dropout=" + args.weight_dropout)
+print("--tied=" + args.tied)
+print("--cuda=" + args.cuda)
+print("--eval_only=" + args.eval_only)
 
 if args.cuda:
     context = mx.gpu(0)
