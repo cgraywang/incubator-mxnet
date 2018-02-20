@@ -134,7 +134,7 @@ test_data = gluon.data.DataLoader(test_dataset,
 ntokens = len(vocab)
 
 ##debug
-print("args.weight_dropout" + args.weight_dropout)
+print("args.weight_dropout" + str(args.weight_dropout))
 
 if args.weight_dropout:
     model = AWDLSTM(args.model, vocab, args.emsize, args.nhid, args.nlayers,
@@ -188,7 +188,7 @@ def train():
     start_train_time = time.time()
     
     #TODO: add debug infor
-    print("args.epochs=" + args.epochs)
+    print("args.epochs=" + str(args.epochs))
     
     for epoch in range(args.epochs):
         total_L = 0.0
