@@ -58,7 +58,7 @@ parser.add_argument('--cuda', action='store_true',
                     help='Whether to use gpu')
 parser.add_argument('--log-interval', type=int, default=200, metavar='N',
                     help='report interval')
-parser.add_argument('--save', type=str, default='model.params',
+parser.add_argument('--save', type=str, default='model.params.wd',
                     help='path to save the final model')
 parser.add_argument('--gctype', type=str, default='none',
                     help='type of gradient compression to use, \
