@@ -164,6 +164,10 @@ def eval(data_source):
 def train():
     best_val = float("Inf")
     start_train_time = time.time()
+    
+    #TODO: add debug infor
+    print("args.epochs=" + args.epochs)
+    
     for epoch in range(args.epochs):
         total_L = 0.0
         start_epoch_time = time.time()
@@ -193,8 +197,8 @@ def train():
                     epoch, i, cur_L, math.exp(cur_L)))
                 total_L = 0.0
             
-            print('[Epoch %d Batch %d] throughput %.2f samples/s'%(
-                    epoch, i, args.batch_size / (time.time() - start_batch_time)))
+#             print('[Epoch %d Batch %d] throughput %.2f samples/s'%(
+#                     epoch, i, args.batch_size / (time.time() - start_batch_time)))
         
         print('[Epoch %d] throughput %.2f samples/s'%(
                     epoch, (args.batch_size * nbatch_train) / (time.time() - start_epoch_time)))
@@ -206,17 +210,23 @@ def train():
             epoch, time.time()-start_epoch_time, val_L, math.exp(val_L)))
 
         if val_L < best_val:
+            print("start val_L<best_val")
             best_val = val_L
+            print("start test_L")
             test_L = eval(test_data)
+            print("end test_L")
             model.collect_params().save(args.save)
             print('test loss %.2f, test ppl %.2f'%(test_L, math.exp(test_L)))
         else:
+            print("start args.lr = args.lr*0.25")
             args.lr = args.lr*0.25
             trainer._init_optimizer('sgd',
                                     {'learning_rate': args.lr,
                                      'momentum': 0,
                                      'wd': 0})
+            print("end trainer._init_optimizer")
             model.collect_params().load(args.save, context)
+            print("end model.collect_params()")
             
     print('Total training throughput %.2f samples/s'%(
                             (args.batch_size * nbatch_train * args.epochs) / (time.time() - start_train_time)))
