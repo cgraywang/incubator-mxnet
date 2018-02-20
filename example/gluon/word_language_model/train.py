@@ -241,16 +241,17 @@ def train():
             print("end test_L")
             model.collect_params().save(args.save)
             print('test loss %.2f, test ppl %.2f'%(test_L, math.exp(test_L)))
-        else:
-            print("start args.lr = args.lr*0.25")
-            args.lr = args.lr*0.25
-            trainer._init_optimizer('sgd',
-                                    {'learning_rate': args.lr,
-                                     'momentum': 0,
-                                     'wd': 0})
-            print("end trainer._init_optimizer")
-            model.collect_params().load(args.save, context)
-            print("end model.collect_params()")
+#             TODO: remove by referring to the paper, but may be useful
+#         else:
+#             print("start args.lr = args.lr*0.25")
+#             args.lr = args.lr*0.25
+#             trainer._init_optimizer('sgd',
+#                                     {'learning_rate': args.lr,
+#                                      'momentum': 0,
+#                                      'wd': 0})
+#             print("end trainer._init_optimizer")
+#             model.collect_params().load(args.save, context)
+#             print("end model.collect_params()")
             
     print('Total training throughput %.2f samples/s'%(
                             (args.batch_size * nbatch_train * args.epochs) / (time.time() - start_train_time)))
