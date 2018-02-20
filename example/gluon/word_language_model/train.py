@@ -65,6 +65,8 @@ parser.add_argument('--gctype', type=str, default='none',
                           takes `2bit` or `none` for now.')
 parser.add_argument('--gcthreshold', type=float, default=0.5,
                     help='threshold for 2bit gradient compression')
+parser.add_argument('--eval_only', action='store_true',
+                    help='Whether to only evaluate the trained model')
 args = parser.parse_args()
 
 
@@ -161,11 +163,13 @@ def eval(data_source):
 
 def train():
     best_val = float("Inf")
+    start_train_time = time.time()
     for epoch in range(args.epochs):
         total_L = 0.0
-        start_time = time.time()
+        start_epoch_time = time.time()
         hidden = model.begin_state(func=mx.nd.zeros, batch_size=args.batch_size, ctx=context)
         for i, (data, target) in enumerate(train_data):
+            start_batch_time = time.time()
             data = data.as_in_context(context).T
             target = target.as_in_context(context).T
             hidden = detach(hidden)
@@ -188,11 +192,18 @@ def train():
                 print('[Epoch %d Batch %d] loss %.2f, ppl %.2f'%(
                     epoch, i, cur_L, math.exp(cur_L)))
                 total_L = 0.0
+            
+            print('[Epoch %d Batch %d] throughput %.2f samples/s'%(
+                    epoch, i, args.batch_size / (time.time() - start_batch_time)))
+        
+        print('[Epoch %d] throughput %.2f samples/s'%(
+                    epoch, (args.batch_size * nbatch_train) / (time.time() - start_epoch_time)))
+        
 
         val_L = eval(val_data)
 
         print('[Epoch %d] time cost %.2fs, valid loss %.2f, valid ppl %.2f'%(
-            epoch, time.time()-start_time, val_L, math.exp(val_L)))
+            epoch, time.time()-start_epoch_time, val_L, math.exp(val_L)))
 
         if val_L < best_val:
             best_val = val_L
@@ -206,11 +217,24 @@ def train():
                                      'momentum': 0,
                                      'wd': 0})
             model.collect_params().load(args.save, context)
+            
+    print('Total training throughput %.2f samples/s'%(
+                            (args.batch_size * nbatch_train * args.epochs) / (time.time() - start_train_time)))
+            
+
+            
+# TODO: add multi-GPU training support
+
+def train(num_gpus, batch_size, lr):
+    pass
 
 if __name__ == '__main__':
-    start_time = time.time()
-    train()
+    start_pipeline_time = time.time()
+    if not eval_only:
+        train()
     model.collect_params().load(args.save, context)
+    val_L = eval(val_data)
     test_L = eval(test_data)
+    print('Best validation loss %.2f, test ppl %.2f'%(val_L, math.exp(val_L)))
     print('Best test loss %.2f, test ppl %.2f'%(test_L, math.exp(test_L)))
-    print('Total time cost %.2fs'%(time.time()-start_time))
+    print('Total time cost %.2fs'%(time.time()-start_pipeline_time))
