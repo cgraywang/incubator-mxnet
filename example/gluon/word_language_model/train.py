@@ -225,8 +225,8 @@ def train():
             
 # TODO: add multi-GPU training support
 
-def train(num_gpus, batch_size, lr):
-    pass
+# def train(num_gpus, batch_size, lr):
+#     pass
 
 if __name__ == '__main__':
     start_pipeline_time = time.time()
