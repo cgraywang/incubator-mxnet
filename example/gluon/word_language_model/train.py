@@ -230,7 +230,7 @@ def train(num_gpus, batch_size, lr):
 
 if __name__ == '__main__':
     start_pipeline_time = time.time()
-    if not eval_only:
+    if not args.eval_only:
         train()
     model.collect_params().load(args.save, context)
     val_L = eval(val_data)
