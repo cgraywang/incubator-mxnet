@@ -182,7 +182,7 @@ def train():
     for epoch in range(args.epochs):
         total_L = 0.0
         start_epoch_time = time.time()
-        hidden = model.begin_state(func=mx.nd.zeros, batch_size=args.batch_size, ctx=context)
+        hidden = model.begin_state(func=mx.nd.zeros, batch_size=args.batch_size)
         for i, (data, target) in enumerate(train_data):
             start_batch_time = time.time()
             data = data.as_in_context(context).T
