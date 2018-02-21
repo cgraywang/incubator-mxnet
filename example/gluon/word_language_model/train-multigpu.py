@@ -182,7 +182,9 @@ def train():
     for epoch in range(args.epochs):
         total_L = 0.0
         start_epoch_time = time.time()
-        hidden = model.begin_state(func=mx.nd.zeros, batch_size=args.batch_size, ctx=context)
+#         hidden = model.begin_state(func=mx.nd.zeros, batch_size=args.batch_size, ctx=context)
+        
+        hiddens = [model.begin_state(func=mx.nd.zeros, batch_size=args.batch_size, ctx=ctx) for ctx in context]
         for i, (data, target) in enumerate(train_data):
             start_batch_time = time.time()
             data = data.as_in_context(context).T
@@ -191,13 +193,14 @@ def train():
             data_list = gluon.utils.split_and_load(data, context)
             target_list = gluon.utils.split_and_load(target, context)
             
-            hidden = detach(hidden)
+            hiddens = [detach(hidden) for hidden in hiddens]
+#             hidden = detach(hidden)
 #             hidden_list = gluon.utils.split_and_load(hidden, context)
             
             with autograd.record():
-                output, hidden = model(data, hidden)
-                Ls = [loss(mx.nd.reshape(model(X,H).output, (-3, -1)), mx.nd.reshape(y, (-1, 1))) for X, y, h in zip(
-                    data_list, label_list, hidden)]
+#                 output, hidden = model(data, hidden)
+                Ls = [loss(mx.nd.reshape(model(X,h).output, (-3, -1)), mx.nd.reshape(y, (-1, 1))) for X, y, h in zip(
+                    data_list, label_list, hiddens)]
             for L in Ls:
                 L.backward()
 
