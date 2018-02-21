@@ -82,6 +82,7 @@ print(args)
 
 if args.cuda:
     context = [mx.gpu(i) for i in range(args.num_gpus)]
+    print('Running on', context)
 else:
     context = mx.cpu(0)
 
