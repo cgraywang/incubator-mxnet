@@ -200,7 +200,7 @@ def train():
             hiddens = [detach(hidden) for hidden in hiddens]
 #             hidden = detach(hidden)
 #             hidden_list = gluon.utils.split_and_load(hidden, context)
-            
+            Ls = []
             with autograd.record():
 #                 output, hidden = model(data, hidden)
 #                 Ls = [loss(mx.nd.reshape(model(X,h).output, (-3, -1)), mx.nd.reshape(y, (-1, 1))) for X, y, h in zip(
