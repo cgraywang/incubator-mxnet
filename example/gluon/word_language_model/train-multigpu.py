@@ -187,8 +187,12 @@ def train():
         hiddens = [model.begin_state(func=mx.nd.zeros, batch_size=args.batch_size, ctx=ctx) for ctx in context]
         for i, (data, target) in enumerate(train_data):
             start_batch_time = time.time()
-            data = data.as_in_context(context).T
-            target = target.as_in_context(context).T
+            
+#             data = data.as_in_context(context).T
+#             target = target.as_in_context(context).T
+            
+            data = data.T
+            target= target.T
             
             data_list = gluon.utils.split_and_load(data, context)
             target_list = gluon.utils.split_and_load(target, context)
