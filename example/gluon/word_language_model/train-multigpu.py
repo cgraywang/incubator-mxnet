@@ -204,7 +204,7 @@ def train():
             with autograd.record():
 #                 output, hidden = model(data, hidden)
                 Ls = [loss(mx.nd.reshape(model(X,h).output, (-3, -1)), mx.nd.reshape(y, (-1, 1))) for X, y, h in zip(
-                    data_list, label_list, hiddens)]
+                    data_list, target_list, hiddens)]
             for L in Ls:
                 L.backward()
 
