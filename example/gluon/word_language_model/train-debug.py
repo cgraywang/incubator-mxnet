@@ -216,7 +216,7 @@ def train():
                 output, hidden = model(data, hidden)
                 
                 output = mx.nd.reshape(output, (-3, -1))
-                target = mx.nd.reshape(target, (-1, 1))
+                target = mx.nd.reshape(target, (-1,))
                 print("output.shape=")
                 print(output.shape)
                 print("output=")
