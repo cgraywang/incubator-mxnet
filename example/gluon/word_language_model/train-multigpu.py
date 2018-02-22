@@ -222,11 +222,11 @@ def train():
             total_L += sum([mx.nd.sum(L).asscalar() for L in Ls])
             
             #what does this do?????? why set total_L = 0.0 ...
-#             if i % args.log_interval == 0 and i > 0:
-#                 cur_L = total_L / args.bptt / args.batch_size / args.log_interval
-#                 print('[Epoch %d Batch %d] loss %.2f, ppl %.2f'%(
-#                     epoch, i, cur_L, math.exp(cur_L)))
-#                 total_L = 0.0
+            if i % args.log_interval == 0 and i > 0:
+                cur_L = total_L / args.bptt / args.batch_size / args.log_interval
+                print('[Epoch %d Batch %d] loss %.2f, ppl %.2f'%(
+                    epoch, i, cur_L, math.exp(cur_L)))
+                total_L = 0.0
             
 #             print('[Epoch %d Batch %d] throughput %.2f samples/s'%(
 #                     epoch, i, args.batch_size / (time.time() - start_batch_time)))
