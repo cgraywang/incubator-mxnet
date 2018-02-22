@@ -95,7 +95,7 @@ print("--eval_only=" + str(args.eval_only))
 
 
 if args.cuda:
-    context = mx.gpu(0)
+    context = mx.gpu(3)
 else:
     context = mx.cpu(0)
 
@@ -198,13 +198,16 @@ def train():
         hidden = model.begin_state(func=mx.nd.zeros, batch_size=args.batch_size, ctx=context)
         for i, (data, target) in enumerate(train_data):
             start_batch_time = time.time()
+            
             data = data.as_in_context(context).T
             target = target.as_in_context(context).T
             hidden = detach(hidden)
             with autograd.record():
                 output, hidden = model(data, hidden)
-                L = loss(mx.nd.reshape(output, (-3, -1)),
-                         mx.nd.reshape(target, (-1, 1)))
+                output = mx.nd.reshape(output, (-3, -1))
+                target = mx.nd.reshape(target, (-1, 1))
+                L = loss(output,
+                         target)
                 L.backward()
 
             grads = [p.grad(context) for p in model.collect_params().values()]

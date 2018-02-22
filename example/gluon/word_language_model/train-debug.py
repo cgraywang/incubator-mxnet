@@ -95,7 +95,7 @@ print("--eval_only=" + str(args.eval_only))
 
 
 if args.cuda:
-    context = mx.gpu(0)
+    context = mx.gpu(3)
 else:
     context = mx.cpu(0)
 
