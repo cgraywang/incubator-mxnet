@@ -188,9 +188,6 @@ def train():
         for i, (data, target) in enumerate(train_data):
             start_batch_time = time.time()
             
-#             data = data.as_in_context(context).T
-#             target = target.as_in_context(context).T
-            
             data = data.T
             target= target.T
             
@@ -198,32 +195,31 @@ def train():
             target_list = gluon.utils.split_and_load(target, context, even_split=False)
             
             hiddens = [detach(hidden) for hidden in hiddens]
-#             hidden = detach(hidden)
-#             hidden_list = gluon.utils.split_and_load(hidden, context)
+            
             Ls = []
             with autograd.record():
-#                 output, hidden = model(data, hidden)
-#                 Ls = [loss(mx.nd.reshape(model(X,h).output, (-3, -1)), mx.nd.reshape(y, (-1, 1))) for X, y, h in zip(
-#                     data_list, target_list, hiddens)]
                 for X, y, h in zip(data_list, target_list, hiddens):
                     output, h = model(X, h)
                     Ls.append(loss(mx.nd.reshape(output, (-3, -1)), mx.nd.reshape(y, (-1, 1))))
             for L in Ls:
                 L.backward()
 
-            grads = [p.grad(context) for p in model.collect_params().values()]
+            
+            for ctx in context:
+                grads = [p.grad(ctx) for p in model.collect_params().values()]
             # Here gradient is for the whole batch.
             # So we multiply max_norm by batch_size and bptt size to balance it.
-            gluon.utils.clip_global_norm(grads, args.clip * args.bptt * args.batch_size)
+                gluon.utils.clip_global_norm(grads, args.clip * args.bptt * args.batch_size)
 
             trainer.step(args.batch_size)
             total_L += sum([mx.nd.sum(L).asscalar() for L in Ls])
-
-            if i % args.log_interval == 0 and i > 0:
-                cur_L = total_L / args.bptt / args.batch_size / args.log_interval
-                print('[Epoch %d Batch %d] loss %.2f, ppl %.2f'%(
-                    epoch, i, cur_L, math.exp(cur_L)))
-                total_L = 0.0
+            
+            #what does this do?????? why set total_L = 0.0 ...
+#             if i % args.log_interval == 0 and i > 0:
+#                 cur_L = total_L / args.bptt / args.batch_size / args.log_interval
+#                 print('[Epoch %d Batch %d] loss %.2f, ppl %.2f'%(
+#                     epoch, i, cur_L, math.exp(cur_L)))
+#                 total_L = 0.0
             
 #             print('[Epoch %d Batch %d] throughput %.2f samples/s'%(
 #                     epoch, i, args.batch_size / (time.time() - start_batch_time)))
