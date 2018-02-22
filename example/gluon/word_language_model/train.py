@@ -75,23 +75,7 @@ args = parser.parse_args()
 ###############################################################################
 
 
-print("--model=" + str(args.model))
-print("--emsize=" + str(args.emsize))
-print("--nhid=" + str(args.nhid))
-print("--nlayers=" + str(args.nlayers))
-print("--lr=" + str(args.lr))
-print("--clip=" + str(args.clip))
-print("--epochs=" + str(args.epochs))
-print("--batch_size=" + str(args.batch_size))
-print("--bptt=" + str(args.bptt))
-print("--dropout=" + str(args.dropout))
-print("--dropout_h=" + str(args.dropout_h))
-print("--dropout_i=" + str(args.dropout_i))
-print("--dropout_e=" + str(args.dropout_e))
-print("--weight_dropout=" + str(args.weight_dropout))
-print("--tied=" + str(args.tied))
-print("--cuda=" + str(args.cuda))
-print("--eval_only=" + str(args.eval_only))
+print(args)
 
 
 if args.cuda:
@@ -136,7 +120,7 @@ test_data = gluon.data.DataLoader(test_dataset,
 ntokens = len(vocab)
 
 ##debug
-print("args.weight_dropout" + str(args.weight_dropout))
+print("args.weight_dropout=" + str(args.weight_dropout))
 
 if args.weight_dropout:
     model = AWDLSTM(args.model, vocab, args.emsize, args.nhid, args.nlayers,
@@ -180,7 +164,7 @@ def eval(data_source):
         target = target.as_in_context(context).T
         output, hidden = model(data, hidden)
         L = loss(mx.nd.reshape(output, (-3, -1)),
-                 mx.nd.reshape(target, (-1, 1)))
+                 mx.nd.reshape(target, (-1,)))
         total_L += mx.nd.sum(L).asscalar()
         ntotal += L.size
     return total_L / ntotal
@@ -198,16 +182,13 @@ def train():
         hidden = model.begin_state(func=mx.nd.zeros, batch_size=args.batch_size, ctx=context)
         for i, (data, target) in enumerate(train_data):
             start_batch_time = time.time()
-            
             data = data.as_in_context(context).T
             target = target.as_in_context(context).T
             hidden = detach(hidden)
             with autograd.record():
                 output, hidden = model(data, hidden)
-                output = mx.nd.reshape(output, (-3, -1))
-                target = mx.nd.reshape(target, (-1, 1))
-                L = loss(output,
-                         target)
+                L = loss(mx.nd.reshape(output, (-3, -1)),
+                         mx.nd.reshape(target, (-1,)))
                 L.backward()
 
             grads = [p.grad(context) for p in model.collect_params().values()]
@@ -245,16 +226,16 @@ def train():
             model.collect_params().save(args.save)
             print('test loss %.2f, test ppl %.2f'%(test_L, math.exp(test_L)))
 #             TODO: remove by referring to the paper, but may be useful
-#         else:
-#             print("start args.lr = args.lr*0.25")
-#             args.lr = args.lr*0.25
-#             trainer._init_optimizer('sgd',
-#                                     {'learning_rate': args.lr,
-#                                      'momentum': 0,
-#                                      'wd': 0})
-#             print("end trainer._init_optimizer")
-#             model.collect_params().load(args.save, context)
-#             print("end model.collect_params()")
+        else:
+            print("start args.lr = args.lr*0.25")
+            args.lr = args.lr*0.25
+            trainer._init_optimizer('sgd',
+                                    {'learning_rate': args.lr,
+                                     'momentum': 0,
+                                     'wd': 0})
+            print("end trainer._init_optimizer")
+            model.collect_params().load(args.save, context)
+            print("end model.collect_params()")
             
     print('Total training throughput %.2f samples/s'%(
                             (args.batch_size * nbatch_train * args.epochs) / (time.time() - start_train_time)))
