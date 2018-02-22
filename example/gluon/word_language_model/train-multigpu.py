@@ -194,8 +194,8 @@ def train():
             data = data.T
             target= target.T
             
-            data_list = gluon.utils.split_and_load(data, context)
-            target_list = gluon.utils.split_and_load(target, context)
+            data_list = gluon.utils.split_and_load(data, context, even_split=False)
+            target_list = gluon.utils.split_and_load(target, context, even_split=False)
             
             hiddens = [detach(hidden) for hidden in hiddens]
 #             hidden = detach(hidden)
