@@ -209,11 +209,12 @@ def train():
         total_L = 0.0
         start_epoch_time = time.time()
         hidden = model.begin_state(func=mx.nd.zeros, batch_size=args.batch_size, ctx=context)
-        for i, (data, target) in enumerate(train_data):
+        for ibatch, i in enumerate(range(0, train_data.shape[0] - 1, args.bptt)):
+            data, target = get_batch(train_data, i)
             start_batch_time = time.time()
             
-            data = data.as_in_context(context).T
-            target = target.as_in_context(context).T
+#             data = data.as_in_context(context).T
+#             target = target.as_in_context(context).T
             
             print("data.shape=")
             print(data.shape)
@@ -228,8 +229,8 @@ def train():
             with autograd.record():
                 output, hidden = model(data, hidden)
                 
-                output = mx.nd.reshape(output, (-3, -1))
-                target = mx.nd.reshape(target, (-1,))
+#                 output = mx.nd.reshape(output, (-3, -1))
+#                 target = mx.nd.reshape(target, (-1,))
                 print("output.shape=")
                 print(output.shape)
                 print("output=")
