@@ -194,12 +194,12 @@ def eval(data_source):
     total_L = 0.0
     ntotal = 0
     hidden = model.begin_state(func=mx.nd.zeros, batch_size=args.batch_size, ctx=context)
-    for i, (data, target) in enumerate(data_source):
-        data = data.as_in_context(context).T
-        target = target.as_in_context(context).T
+    for ibatch, i in enumerate(range(0, data_source.shape[0] - 1, args.bptt)):
+        data, target = get_batch(data_source, i)
         output, hidden = model(data, hidden)
-        L = loss(mx.nd.reshape(output, (-3, -1)),
-                 mx.nd.reshape(target, (-1,)))
+        output = mx.nd.reshape(output, (-3, -1))
+        L = loss(output,
+                 target)
         total_L += mx.nd.sum(L).asscalar()
         ntotal += L.size
     return total_L / ntotal
@@ -222,14 +222,14 @@ def train():
 #             data = data.as_in_context(context).T
 #             target = target.as_in_context(context).T
             
-            print("data.shape=")
-            print(data.shape)
-            print("data=")
-            print(data)
-            print("target.shape=")
-            print(target.shape)
-            print("target=")
-            print(target)
+#             print("data.shape=")
+#             print(data.shape)
+#             print("data=")
+#             print(data)
+#             print("target.shape=")
+#             print(target.shape)
+#             print("target=")
+#             print(target)
             
             hidden = detach(hidden)
             with autograd.record():
@@ -237,15 +237,15 @@ def train():
                 
                 output = mx.nd.reshape(output, (-3, -1))
 #                 target = mx.nd.reshape(target, (-1,))
-                print("output.shape=")
-                print(output.shape)
-                print("output=")
-                print(output)
-                print("target.shape=")
-                print(target.shape)
-                print("target=")
-                print(target)
-                return
+#                 print("output.shape=")
+#                 print(output.shape)
+#                 print("output=")
+#                 print(output)
+#                 print("target.shape=")
+#                 print(target.shape)
+#                 print("target=")
+#                 print(target)
+#                 return
             
                 L = loss(output,
                          target)
@@ -286,16 +286,16 @@ def train():
             model.collect_params().save(args.save)
             print('test loss %.2f, test ppl %.2f'%(test_L, math.exp(test_L)))
 #             TODO: remove by referring to the paper, but may be useful
-#         else:
-#             print("start args.lr = args.lr*0.25")
-#             args.lr = args.lr*0.25
-#             trainer._init_optimizer('sgd',
-#                                     {'learning_rate': args.lr,
-#                                      'momentum': 0,
-#                                      'wd': 0})
-#             print("end trainer._init_optimizer")
-#             model.collect_params().load(args.save, context)
-#             print("end model.collect_params()")
+        else:
+            print("start args.lr = args.lr*0.25")
+            args.lr = args.lr*0.25
+            trainer._init_optimizer('sgd',
+                                    {'learning_rate': args.lr,
+                                     'momentum': 0,
+                                     'wd': 0})
+            print("end trainer._init_optimizer")
+            model.collect_params().load(args.save, context)
+            print("end model.collect_params()")
             
     print('Total training throughput %.2f samples/s'%(
                             (args.batch_size * nbatch_train * args.epochs) / (time.time() - start_train_time)))
