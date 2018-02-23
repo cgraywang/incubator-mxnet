@@ -96,8 +96,8 @@ train_data = gluon.data.DataLoader(train_dataset,
                                                                         nbatch_train),
                                    last_batch='discard')
 
-print('train_dataset.shape')
-print(train_dataset.shape)
+# print('train_dataset.shape')
+# print(train_dataset.shape)
 print('train_dataset')
 print(train_dataset)
 
