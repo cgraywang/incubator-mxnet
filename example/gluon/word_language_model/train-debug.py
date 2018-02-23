@@ -235,7 +235,7 @@ def train():
             with autograd.record():
                 output, hidden = model(data, hidden)
                 
-#                 output = mx.nd.reshape(output, (-3, -1))
+                output = mx.nd.reshape(output, (-3, -1))
 #                 target = mx.nd.reshape(target, (-1,))
                 print("output.shape=")
                 print(output.shape)
