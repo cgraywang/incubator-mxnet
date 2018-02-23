@@ -67,6 +67,8 @@ parser.add_argument('--gcthreshold', type=float, default=0.5,
                     help='threshold for 2bit gradient compression')
 parser.add_argument('--eval_only', action='store_true',
                     help='Whether to only evaluate the trained model')
+parser.add_argument('--data', type=str, default='./data/wikitext-2/wiki.',
+                    help='location of the data corpus')
 args = parser.parse_args()
 
 
@@ -82,24 +84,40 @@ if args.cuda:
 else:
     context = mx.cpu(0)
 
-train_dataset = contrib.data.text.WikiText2('./data', 'train', seq_len=args.bptt)
-vocab = train_dataset.vocabulary
-val_dataset, test_dataset = [contrib.data.text.WikiText2('./data', segment,
-                                                         vocab=vocab,
-                                                         seq_len=args.bptt)
-                             for segment in ['validation', 'test']]
+# train_dataset = contrib.data.text.WikiText2('./data', 'train', seq_len=args.bptt)
+# vocab = train_dataset.vocabulary
+# val_dataset, test_dataset = [contrib.data.text.WikiText2('./data', segment,
+#                                                          vocab=vocab,
+#                                                          seq_len=args.bptt)
+#                              for segment in ['validation', 'test']]
 
-nbatch_train = len(train_dataset) // args.batch_size
-train_data = gluon.data.DataLoader(train_dataset,
-                                   batch_size=args.batch_size,
-                                   sampler=contrib.data.IntervalSampler(len(train_dataset),
-                                                                        nbatch_train),
-                                   last_batch='discard')
+# nbatch_train = len(train_dataset) // args.batch_size
+# train_data = gluon.data.DataLoader(train_dataset,
+#                                    batch_size=args.batch_size,
+#                                    sampler=contrib.data.IntervalSampler(len(train_dataset),
+#                                                                         nbatch_train),
+#                                    last_batch='discard')
+
+
+corpus = data.Corpus(args.data)
+vocab = corpus.dictionary
+
+def batchify(data, batch_size):
+    """Reshape data into (num_example, batch_size)"""
+    nbatch = data.shape[0] // batch_size
+    data = data[:nbatch * batch_size]
+    data = data.reshape((batch_size, nbatch)).T
+    return data
+
+train_data = batchify(corpus.train, args.batch_size).as_in_context(context)
+val_data = batchify(corpus.valid, args.batch_size).as_in_context(context)
+test_data = batchify(corpus.test, args.batch_size).as_in_context(context)
+
 
 # print('train_dataset.shape')
 # print(train_dataset.shape)
-print('train_dataset')
-print(train_dataset)
+# print('train_dataset')
+# print(train_dataset)
 
 # print('train_data.shape')
 # print(train_data.shape)
@@ -107,19 +125,19 @@ print('train_data')
 print(train_data)
 
 
-nbatch_val = len(val_dataset) // args.batch_size
-val_data = gluon.data.DataLoader(val_dataset,
-                                 batch_size=args.batch_size,
-                                 sampler=contrib.data.IntervalSampler(len(val_dataset),
-                                                                      nbatch_val),
-                                 last_batch='discard')
+# nbatch_val = len(val_dataset) // args.batch_size
+# val_data = gluon.data.DataLoader(val_dataset,
+#                                  batch_size=args.batch_size,
+#                                  sampler=contrib.data.IntervalSampler(len(val_dataset),
+#                                                                       nbatch_val),
+#                                  last_batch='discard')
 
-nbatch_test = len(test_dataset) // args.batch_size
-test_data = gluon.data.DataLoader(test_dataset,
-                                  batch_size=args.batch_size,
-                                  sampler=contrib.data.IntervalSampler(len(test_dataset),
-                                                                       nbatch_test),
-                                  last_batch='discard')
+# nbatch_test = len(test_dataset) // args.batch_size
+# test_data = gluon.data.DataLoader(test_dataset,
+#                                   batch_size=args.batch_size,
+#                                   sampler=contrib.data.IntervalSampler(len(test_dataset),
+#                                                                        nbatch_test),
+#                                   last_batch='discard')
 
 
 ###############################################################################
