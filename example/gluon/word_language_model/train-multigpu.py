@@ -77,9 +77,6 @@ args = parser.parse_args()
 ###############################################################################
 
 
-print(args)
-
-
 if args.cuda:
     context = [mx.gpu(i) for i in range(args.num_gpus)]
     print('Running on', context)
@@ -122,20 +119,14 @@ test_data = gluon.data.DataLoader(test_dataset,
 
 ntokens = len(vocab)
 
-##debug
-print("args.weight_dropout" + str(args.weight_dropout))
-
 if args.weight_dropout:
     model = AWDLSTM(args.model, vocab, args.emsize, args.nhid, args.nlayers,
                  args.dropout, args.dropout_h, args.dropout_i, args.dropout_e, args.weight_dropout,
                  args.tied)
-    print("awdlstm")
 else:
     model = RNNModel(args.model, vocab, args.emsize, args.nhid,
                  args.nlayers, args.dropout, args.tied)
-    print("rnnmodel")
     
-#initialization
 model.collect_params().initialize(mx.init.Xavier(), ctx=context)
 
 
@@ -158,18 +149,19 @@ def detach(hidden):
         hidden = hidden.detach()
     return hidden
 
-#test on multi-gpu
 def eval(data_source):
     total_L = 0.0
     ntotal = 0
-#     hidden = model.begin_state(func=mx.nd.zeros, batch_size=args.batch_size, ctx=context)
     hiddens = [model.begin_state(func=mx.nd.zeros, batch_size=args.batch_size, ctx=ctx) for ctx in context]
     for i, (data, target) in enumerate(data_source):
         data = data.T
         target= target.T
+        
         data_list = gluon.utils.split_and_load(data, context, even_split=False)
         target_list = gluon.utils.split_and_load(target, context, even_split=False)
+        
         hiddens = [detach(hidden) for hidden in hiddens]
+        
         Ls = []
         for X, y, h in zip(data_list, target_list, hiddens):
             output, h = model(X, h)
@@ -178,19 +170,12 @@ def eval(data_source):
         ntotal += sum([L.size for L in Ls])
     return total_L / ntotal
 
-#train on multi-gpu
 def train():
     best_val = float("Inf")
     start_train_time = time.time()
-    
-    #TODO: add debug infor
-    print("args.epochs=" + str(args.epochs))
-    
     for epoch in range(args.epochs):
         total_L = 0.0
         start_epoch_time = time.time()
-#         hidden = model.begin_state(func=mx.nd.zeros, batch_size=args.batch_size, ctx=context)
-        
         hiddens = [model.begin_state(func=mx.nd.zeros, batch_size=args.batch_size, ctx=ctx) for ctx in context]
         for i, (data, target) in enumerate(train_data):
             start_batch_time = time.time()
@@ -211,25 +196,21 @@ def train():
             for L in Ls:
                 L.backward()
 
-            
             for ctx in context:
                 grads = [p.grad(ctx) for p in model.collect_params().values()]
-            # Here gradient is for the whole batch.
-            # So we multiply max_norm by batch_size and bptt size to balance it.
                 gluon.utils.clip_global_norm(grads, args.clip * args.bptt * args.batch_size)
 
             trainer.step(args.batch_size)
             total_L += sum([mx.nd.sum(L).asscalar() for L in Ls])
             
-            #what does this do?????? why set total_L = 0.0 ...
             if i % args.log_interval == 0 and i > 0:
                 cur_L = total_L / args.bptt / args.batch_size / args.log_interval
                 print('[Epoch %d Batch %d] loss %.2f, ppl %.2f'%(
                     epoch, i, cur_L, math.exp(cur_L)))
                 total_L = 0.0
             
-#             print('[Epoch %d Batch %d] throughput %.2f samples/s'%(
-#                     epoch, i, args.batch_size / (time.time() - start_batch_time)))
+            print('[Epoch %d Batch %d] throughput %.2f samples/s'%(
+                    epoch, i, args.batch_size / (time.time() - start_batch_time)))
         
         mx.nd.waitall()
     
@@ -243,34 +224,21 @@ def train():
             epoch, time.time()-start_epoch_time, val_L, math.exp(val_L)))
 
         if val_L < best_val:
-            print("start val_L<best_val")
             best_val = val_L
-            print("start test_L")
             test_L = eval(test_data)
-            print("end test_L")
             model.collect_params().save(args.save)
             print('test loss %.2f, test ppl %.2f'%(test_L, math.exp(test_L)))
-#             TODO: remove by referring to the paper, but may be useful
-#         else:
-#             print("start args.lr = args.lr*0.25")
-#             args.lr = args.lr*0.25
-#             trainer._init_optimizer('sgd',
-#                                     {'learning_rate': args.lr,
-#                                      'momentum': 0,
-#                                      'wd': 0})
-#             print("end trainer._init_optimizer")
-#             model.collect_params().load(args.save, context)
-#             print("end model.collect_params()")
+        else:
+            print("start args.lr = args.lr*0.25")
+            args.lr = args.lr*0.25
+            trainer._init_optimizer('sgd',
+                                    {'learning_rate': args.lr,
+                                     'momentum': 0,
+                                     'wd': 0})
+            model.collect_params().load(args.save, context)
             
     print('Total training throughput %.2f samples/s'%(
                             (args.batch_size * nbatch_train * args.epochs) / (time.time() - start_train_time)))
-            
-
-            
-# TODO: add multi-GPU training support
-
-# def train(num_gpus, batch_size, lr):
-#     pass
 
 if __name__ == '__main__':
     start_pipeline_time = time.time()
