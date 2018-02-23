@@ -177,6 +177,12 @@ loss = gluon.loss.SoftmaxCrossEntropyLoss()
 # Training code
 ###############################################################################
 
+def get_batch(source, i):
+    seq_len = min(args.bptt, source.shape[0] - 1 - i)
+    data = source[i:i+seq_len]
+    target = source[i+1:i+1+seq_len]
+    return data, target.reshape((-1,))
+
 def detach(hidden):
     if isinstance(hidden, (tuple, list)):
         hidden = [i.detach() for i in hidden]
