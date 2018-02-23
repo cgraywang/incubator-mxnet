@@ -74,24 +74,7 @@ args = parser.parse_args()
 # Load data
 ###############################################################################
 
-
-print("--model=" + str(args.model))
-print("--emsize=" + str(args.emsize))
-print("--nhid=" + str(args.nhid))
-print("--nlayers=" + str(args.nlayers))
-print("--lr=" + str(args.lr))
-print("--clip=" + str(args.clip))
-print("--epochs=" + str(args.epochs))
-print("--batch_size=" + str(args.batch_size))
-print("--bptt=" + str(args.bptt))
-print("--dropout=" + str(args.dropout))
-print("--dropout_h=" + str(args.dropout_h))
-print("--dropout_i=" + str(args.dropout_i))
-print("--dropout_e=" + str(args.dropout_e))
-print("--weight_dropout=" + str(args.weight_dropout))
-print("--tied=" + str(args.tied))
-print("--cuda=" + str(args.cuda))
-print("--eval_only=" + str(args.eval_only))
+print(args)
 
 
 if args.cuda:
