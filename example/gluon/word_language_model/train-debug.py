@@ -113,6 +113,17 @@ train_data = gluon.data.DataLoader(train_dataset,
                                                                         nbatch_train),
                                    last_batch='discard')
 
+print('train_dataset.shape')
+print(train_dataset.shape)
+print('train_dataset')
+print(train_dataset)
+
+print('train_data.shape')
+print(train_data.shape)
+print('train_data')
+print(train_data)
+
+
 nbatch_val = len(val_dataset) // args.batch_size
 val_data = gluon.data.DataLoader(val_dataset,
                                  batch_size=args.batch_size,

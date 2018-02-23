@@ -86,6 +86,12 @@ val_data = batchify(corpus.valid, args.batch_size).as_in_context(context)
 test_data = batchify(corpus.test, args.batch_size).as_in_context(context)
 
 
+print('train_data.shape')
+print(train_data.shape)
+print('train_data')
+print(train_data)
+
+
 ###############################################################################
 # Build the model
 ###############################################################################
