@@ -268,8 +268,8 @@ def train():
 #             print('[Epoch %d Batch %d] throughput %.2f samples/s'%(
 #                     epoch, i, args.batch_size / (time.time() - start_batch_time)))
         
-        print('[Epoch %d] throughput %.2f samples/s'%(
-                    epoch, (args.batch_size * nbatch_train) / (time.time() - start_epoch_time)))
+#         print('[Epoch %d] throughput %.2f samples/s'%(
+#                     epoch, (args.batch_size * nbatch_train) / (time.time() - start_epoch_time)))
         
 
         val_L = eval(val_data)
@@ -297,8 +297,8 @@ def train():
             model.collect_params().load(args.save, context)
             print("end model.collect_params()")
             
-    print('Total training throughput %.2f samples/s'%(
-                            (args.batch_size * nbatch_train * args.epochs) / (time.time() - start_train_time)))
+#     print('Total training throughput %.2f samples/s'%(
+#                             (args.batch_size * nbatch_train * args.epochs) / (time.time() - start_train_time)))
             
 
             
