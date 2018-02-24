@@ -276,8 +276,8 @@ def train():
 
         val_L = eval(val_data)
 
-        print('[Epoch %d] time cost %.2fs, valid loss %.2f, valid ppl %.2f'%(
-            epoch, time.time()-start_epoch_time, val_L, math.exp(val_L)))
+#         print('[Epoch %d] time cost %.2fs, valid loss %.2f, valid ppl %.2f'%(
+#             epoch, time.time()-start_epoch_time, val_L, math.exp(val_L)))
 
         if val_L < best_val:
             print("start val_L<best_val")
