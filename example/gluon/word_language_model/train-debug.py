@@ -70,6 +70,8 @@ parser.add_argument('--eval_only', action='store_true',
                     help='Whether to only evaluate the trained model')
 parser.add_argument('--data', type=str, default='./data/wikitext-2/wiki.',
                     help='location of the data corpus')
+parser.add_argument('--gpu', type=int, default=0,
+                    help='which gpu to run')
 args = parser.parse_args()
 
 
@@ -81,7 +83,7 @@ print(args)
 
 
 if args.cuda:
-    context = mx.gpu(3)
+    context = mx.gpu(args.gpu)
 else:
     context = mx.cpu(0)
 
