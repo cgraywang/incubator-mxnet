@@ -65,8 +65,6 @@ parser.add_argument('--gctype', type=str, default='none',
                           takes `2bit` or `none` for now.')
 parser.add_argument('--gcthreshold', type=float, default=0.5,
                     help='threshold for 2bit gradient compression')
-parser.add_argument('--eval_only', action='store_true',
-                    help='Whether to only evaluate the trained model')
 parser.add_argument('--gpu', type=int, default=3,
                     help='upper epoch limit')
 args = parser.parse_args()
@@ -274,8 +272,7 @@ def train():
 
 if __name__ == '__main__':
     start_pipeline_time = time.time()
-    if not args.eval_only:
-        train()
+    train()
     model.collect_params().load(args.save, context)
     val_L = eval(val_data)
     test_L = eval(test_data)
