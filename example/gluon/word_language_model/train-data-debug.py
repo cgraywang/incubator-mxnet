@@ -113,11 +113,6 @@ test_data = gluon.data.DataLoader(test_dataset,
                                                                        nbatch_test),
                                   last_batch='discard')
 
-print('train_data.shape')
-print(train_data.shape)
-print('train_data')
-print(train_data)
-
 
 ###############################################################################
 # Build the model
