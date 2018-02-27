@@ -84,6 +84,16 @@ else:
     context = mx.cpu(0)
 
 train_dataset = contrib.data.text.WikiText2('./data', 'train', seq_len=args.bptt)
+
+print("train_dataset._get_data():")
+print(train_dataset._get_data())
+
+print("train_dataset._data:")
+print(train_dataset._data)
+
+print("train_dataset._label:")
+print(train_dataset._label)
+
 vocab = train_dataset.vocabulary
 val_dataset, test_dataset = [contrib.data.text.WikiText2('./data', segment,
                                                          vocab=vocab,
@@ -96,6 +106,8 @@ train_data = gluon.data.DataLoader(train_dataset,
                                    sampler=contrib.data.IntervalSampler(len(train_dataset),
                                                                         nbatch_train),
                                    last_batch='discard')
+
+
 
 nbatch_val = len(val_dataset) // args.batch_size
 val_data = gluon.data.DataLoader(val_dataset,
