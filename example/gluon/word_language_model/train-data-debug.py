@@ -208,7 +208,7 @@ def train():
                 print(target.shape)
                 print("target=")
                 print(target)
-                return
+                
             
                 L = loss(output,
                          target)
