@@ -76,7 +76,7 @@ args = parser.parse_args()
 
 
 if args.num_gpus > 0:
-    context = [mx.gpu(0), mx.gpu(1)]
+    context = [mx.gpu(1), mx.gpu(2)]
 else:
     context = [mx.cpu(0)]
 
