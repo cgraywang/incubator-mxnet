@@ -84,10 +84,6 @@ else:
     context = mx.cpu(0)
 
 train_dataset = contrib.data.text.WikiText2('./data', 'train', seq_len=args.bptt)
-
-print("train_dataset._get_data():")
-print(train_dataset._get_data())
-
 print("train_dataset._data:")
 print(train_dataset._data)
 
