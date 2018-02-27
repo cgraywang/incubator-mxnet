@@ -178,16 +178,12 @@ def train():
             data_list = gluon.utils.split_and_load(data, context, even_split=False)
             target_list = gluon.utils.split_and_load(target, context, even_split=False)
             hiddens = [detach(hidden) for hidden in hiddens]
-            print("hiddens:")
-            print(hiddens)
             Ls = []
             with autograd.record():
                 for i, (X, y, h) in enumerate(zip(data_list, target_list, hiddens)):
                     output, h = model(X, h)
                     Ls.append(loss(mx.nd.reshape(output, (-3, -1)), mx.nd.reshape(y, (-1,))))
                     hiddens[i] = h
-            print("Ls:")
-            print(Ls)
             for L in Ls:
                 L.backward()
             for ctx in context:
@@ -196,10 +192,8 @@ def train():
             
             if args.num_gpus == 0:
                 trainer.step(args.batch_size)
-                print("trainer.step(args.batch_size)")
             else:
                 trainer.step(args.batch_size * args.num_gpus)
-                print("trainer.step(args.batch_size * args.num_gpus)")
                 
             total_L += sum([mx.nd.sum(L).asscalar() for L in Ls])
             
