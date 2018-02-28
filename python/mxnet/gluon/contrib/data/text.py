@@ -62,10 +62,10 @@ class _WikiText(_LanguageModelDataset):
             content = fin.read()
         self._build_vocab(content)
         
-        print("self.vocabulary._idx_to_token.keys()")
-        self.vocabulary._idx_to_token.keys()[0:10]
-        print("self.vocabulary._idx_to_token.values()")
-        self.vocabulary._idx_to_token.values()[0:10]
+        print("self.vocabulary._idx_to_token")
+        self.vocabulary._idx_to_token[0:10]
+        print("self.vocabulary._token_to_idx")
+        self.vocabulary._token_to_idx[0:10]
 
         raw_data = [line for line in [x.strip().split() for x in content.splitlines()]
                     if line]
