@@ -63,7 +63,7 @@ class _WikiText(_LanguageModelDataset):
         self._build_vocab(content)
         
         print("self._vocab._idx_to_token[0:10]")
-        self._vocab._idx_to_token[0:10]
+        print(self._vocab._idx_to_token[0:10])
         print(len(self._vocab._idx_to_token))
 #         print("self.vocabulary._token_to_idx")
 #         self.vocabulary._token_to_idx[0:10]
