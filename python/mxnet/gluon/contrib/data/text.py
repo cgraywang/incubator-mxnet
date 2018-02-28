@@ -86,6 +86,10 @@ class _WikiText(_LanguageModelDataset):
         lst = [x for x in line for line in raw_data if x]
         print("lst[0:10]=")
         print(lst[0:10])
+        print("self.vocabulary._token_to_idx['Common']=")
+        print(self.vocabulary._token_to_idx['Common'])
+        print("self.vocabulary._idx_to_token[4294]=")
+        print(self.vocabulary._idx_to_token[4294])
         raw_data = self.vocabulary.to_indices(lst)
         data = raw_data[0:-1]        
         label = raw_data[1:]
