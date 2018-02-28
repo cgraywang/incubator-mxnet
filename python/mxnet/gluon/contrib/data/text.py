@@ -91,7 +91,7 @@ class _WikiText(_LanguageModelDataset):
         print("self.vocabulary._idx_to_token[4294]=")
         print(self.vocabulary._idx_to_token[4294])
         raw_data = self.vocabulary.to_indices(lst)
-        data = raw_data[0:-1]        
+        data = raw_data[0:-1]
         label = raw_data[1:]
         print("raw_data[0:10]=")
         print(raw_data[0:10])
