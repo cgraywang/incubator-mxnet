@@ -69,7 +69,7 @@ class _WikiText(_LanguageModelDataset):
         print("self._vocab._token_to_idx:")
         i = 1
         for key, val in self._vocab._token_to_idx.items():
-            print("key = %d; val = %s"%(key,val))
+            print("key = %s; val = %s"%(key,val))
             i += 1
             if i == 10:
                 break
