@@ -177,9 +177,15 @@ class Vocabulary(object):
         if not isinstance(tokens, list):
             tokens = [tokens]
             to_reduce = True
-
+        
+        print("to_reduce=")
+        print(to_reduce)
+        
         indices = [self.token_to_idx[token] if token in self.token_to_idx
                    else C.UNKNOWN_IDX for token in tokens]
+        
+        print("indices=")
+        print(indices[0:10])
 
         return indices[0] if to_reduce else indices
 

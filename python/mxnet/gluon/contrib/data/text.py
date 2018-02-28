@@ -62,30 +62,34 @@ class _WikiText(_LanguageModelDataset):
             content = fin.read()
         self._build_vocab(content)
         
-        print("self._vocab._idx_to_token[0:10]:")
+        print("self._vocab._idx_to_token[0:10]=")
         print(self._vocab._idx_to_token[0:10])
-        print("len(self._vocab._idx_to_token)")
+        print("len(self._vocab._idx_to_token)=")
         print(len(self._vocab._idx_to_token))
         print("self._vocab._token_to_idx:")
-        print(self._vocab._token_to_idx.items()[0:10])
+        lst = self._vocab._token_to_idx.items()  
+        print(lst[0:10])
 
 #         print("self.vocabulary._token_to_idx")
 #         self.vocabulary._token_to_idx[0:10]
 
         raw_data = [line for line in [x.strip().split() for x in content.splitlines()]
                     if line]
-        print("raw_data[0:10]:")
+        print("raw_data[0:10]=")
         print(raw_data[0:10])
         for line in raw_data:
             line.append(C.EOS_TOKEN)
-        raw_data = self.vocabulary.to_indices([x for x in line for line in raw_data if x])
+        lst = [x for x in line for line in raw_data if x]
+        print("lst[0:10]=")
+        print(lst[0:10])
+        raw_data = self.vocabulary.to_indices(lst)
         data = raw_data[0:-1]        
         label = raw_data[1:]
-        print("raw_data[0:10]:")
+        print("raw_data[0:10]=")
         print(raw_data[0:10])
-        print("data[0]:")
+        print("data[0]=")
         print(data[0])
-        print("label:")
+        print("label[0]=")
         print(label[0])
         return np.array(data, dtype=np.int32), np.array(label, dtype=np.int32)
 
