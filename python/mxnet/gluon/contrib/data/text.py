@@ -61,18 +61,23 @@ class _WikiText(_LanguageModelDataset):
         with io.open(filename, 'r', encoding='utf8') as fin:
             content = fin.read()
         self._build_vocab(content)
+        
+        print("self.vocabulary._idx_to_token.keys()")
+        self.vocabulary._idx_to_token.keys()[0:10]
+        print("self.vocabulary._idx_to_token.values()")
+        self.vocabulary._idx_to_token.values()[0:10]
 
         raw_data = [line for line in [x.strip().split() for x in content.splitlines()]
                     if line]
-        print("raw_data[0]:")
-        print(raw_data[0])
+        print("raw_data[0:10]:")
+        print(raw_data[0:10])
         for line in raw_data:
             line.append(C.EOS_TOKEN)
         raw_data = self.vocabulary.to_indices([x for x in line for line in raw_data if x])
         data = raw_data[0:-1]        
         label = raw_data[1:]
-        print("raw_data[0]:")
-        print(raw_data[0])
+        print("raw_data[0:10]:")
+        print(raw_data[0:10])
         print("data[0]:")
         print(data[0])
         print("label:")
