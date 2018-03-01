@@ -188,14 +188,14 @@ def train():
             data = data.as_in_context(context).T
             target = target.as_in_context(context).T
             
-            print("data.shape=")
-            print(data.shape)
-            print("data=")
-            print(data)
-            print("target.shape=")
-            print(target.shape)
-            print("target=")
-            print(target)
+#             print("data.shape=")
+#             print(data.shape)
+#             print("data=")
+#             print(data)
+#             print("target.shape=")
+#             print(target.shape)
+#             print("target=")
+#             print(target)
             
             hidden = detach(hidden)
             with autograd.record():
@@ -203,15 +203,15 @@ def train():
                 
                 output = mx.nd.reshape(output, (-3, -1))
                 target = mx.nd.reshape(target, (-1,))
-                print("output.shape=")
-                print(output.shape)
-                print("output=")
-                print(output)
-                print("target.shape=")
-                print(target.shape)
-                print("target=")
-                print(target)
-                return
+#                 print("output.shape=")
+#                 print(output.shape)
+#                 print("output=")
+#                 print(output)
+#                 print("target.shape=")
+#                 print(target.shape)
+#                 print("target=")
+#                 print(target)
+#                 return
                 
             
                 L = loss(output,
@@ -232,8 +232,8 @@ def train():
                     epoch, i, cur_L, math.exp(cur_L)))
                 total_L = 0.0
             
-#             print('[Epoch %d Batch %d] throughput %.2f samples/s'%(
-#                     epoch, i, args.batch_size / (time.time() - start_batch_time)))
+            print('[Epoch %d Batch %d] throughput %.2f samples/s'%(
+                    epoch, i, args.batch_size / (time.time() - start_batch_time)))
         
         print('[Epoch %d] throughput %.2f samples/s'%(
                     epoch, (args.batch_size * nbatch_train) / (time.time() - start_epoch_time)))
