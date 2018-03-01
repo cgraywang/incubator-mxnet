@@ -83,7 +83,7 @@ class _WikiText(_LanguageModelDataset):
         print(raw_data[0:10])
         for line in raw_data:
             line.append(C.EOS_TOKEN)
-        lst = [x for x in line for line in raw_data if x]
+        lst = [x for line in raw_data for x in line if x]
         print("lst[0:10]=")
         print(lst[0:10])
         print("self.vocabulary._token_to_idx['Common']=")
