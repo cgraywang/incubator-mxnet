@@ -15,12 +15,11 @@
 # specific language governing permissions and limitations
 # under the License.
 
-import mxnet as mx
-from mxnet import gluon, nd
-from mxnet.gluon import contrib, nn, rnn
+from ... import Block, Parameter, contrib, nn, rnn
+from .... import nd
 
 
-class _StepwiseSeq2SeqModel(gluon.Block):
+class _StepwiseSeq2SeqModel(Block):
     def __init__(self, in_vocab, out_vocab, **kwargs):
         super(_StepwiseSeq2SeqModel, self).__init__(**kwargs)
         self._in_vocab = in_vocab
@@ -49,8 +48,8 @@ class _StepwiseSeq2SeqModel(gluon.Block):
         encoded, state = self.encoder(embedded_inputs, begin_state)
         out = self.decoder(encoded)
         return out, state
-    
-    
+
+
 def _apply_weight_drop_to_rnn_cell(block, rate, weight_dropout_mode = 'training'):
     params = block.collect_params('.*_h2h_weight')
     for key, value in params.items():
@@ -59,7 +58,7 @@ def _apply_weight_drop_to_rnn_cell(block, rate, weight_dropout_mode = 'training'
         for child_block in block._children:
             child_block.collect_params('.*_h2h_weight')._params[key] = weight_dropped_params
 
-def get_rnn_cell(mode, num_layers, num_embed, num_hidden, 
+def get_rnn_cell(mode, num_layers, num_embed, num_hidden,
                  dropout, weight_dropout,
                  var_drop_in, var_drop_state, var_drop_out, weight_dropout_mode = 'training'):
     rnn_cell = rnn.SequentialRNNCell()
@@ -82,10 +81,10 @@ def get_rnn_cell(mode, num_layers, num_embed, num_hidden,
             rnn_cell.add(cell)
             if i != num_layers - 1 and dropout != 0:
                 rnn_cell.add(rnn.DropoutCell(dropout))
-            
+
             if weight_dropout:
                 _apply_weight_drop_to_rnn_cell(rnn_cell, rate = weight_dropout, weight_dropout_mode = weight_dropout_mode)
-    
+
     return rnn_cell
 
 
@@ -96,6 +95,7 @@ def _apply_weight_drop_to_rnn_layer(block, rate, weight_dropout_mode = 'training
         params._params[key] = weight_dropped_params
     for child_block in block._children:
         _apply_weight_drop_to_rnn_layer(child_block, rate, weight_dropout_mode)
+    print(params)
 
 
 
@@ -114,11 +114,11 @@ def get_rnn_layer(mode, num_layers, num_embed, num_hidden, dropout, weight_dropo
                        input_size=num_embed)
     if weight_dropout:
         _apply_weight_drop_to_rnn_layer(block, weight_dropout, weight_dropout_mode = weight_dropout_mode)
-    
-    return block
-    
 
-class RNNCellLayer(gluon.Block):
+    return block
+
+
+class RNNCellLayer(Block):
     """A block that takes an rnn cell and makes it act like rnn layer."""
     def __init__(self, rnn_cell, layout='TNC', **kwargs):
         super(RNNCellBlock, self).__init__(**kwargs)
@@ -157,7 +157,7 @@ class ExtendedSequential(nn.Sequential):
         return x
 
 
-class WeightDropParameter(gluon.Parameter):
+class WeightDropParameter(Parameter):
     """A Container holding parameters (weights) of Blocks and performs dropout.
     parameter : Parameter
         The parameter which drops out.
@@ -193,3 +193,8 @@ class WeightDropParameter(gluon.Parameter):
         if self._rate:
             d = nd.Dropout(d, self._rate, self._mode)
         return d
+
+    def __repr__(self):
+        s = 'WeightDropParameter {name} (shape={shape}, dtype={dtype}, rate={rate}, mode={mode})'
+        return s.format(name=self.name, shape=self.shape, dtype=self.dtype,
+                        rate=self._rate, mode=self._mode)

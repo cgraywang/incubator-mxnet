@@ -28,7 +28,7 @@ You can construct a model with random weights by calling its constructor:
 
     from mxnet.gluon.model_zoo import text
     # TODO
-    awd = vision.awd_variant()
+    awd = text.awd_variant()
 
 We provide pre-trained models for all the listed models.
 These models can constructed by passing ``pretrained=True``:
@@ -37,12 +37,14 @@ These models can constructed by passing ``pretrained=True``:
 
     from mxnet.gluon.model_zoo import text
     # TODO
-    awd = vision.awd_variant(pretrained=True)
+    awd = text.awd_variant(pretrained=True)
 
 .. _AWD: https://arxiv.org/abs/1404.5997
 """
 
-from .lm import *
+from .base import *
+
+from . import lm
 
 def get_model(name, **kwargs):
     """Returns a pre-defined model by name
