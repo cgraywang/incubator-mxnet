@@ -248,7 +248,7 @@ def evalcache(datasource):
                 cache_attn = mx.nd.reshape(mx.nd.softmax(args.theta * logits), (-1,))
                 #broadcast_to
                 #squeeze
-                cache_dist = mx.nd.reshape(mx.nd.sum((cache_attn.broadcast_to(valid_next_word.shape) * valid_next_word), axis = 0), (-1,))
+                cache_dist = mx.nd.reshape(mx.nd.sum((cache_attn.broadcast_to(valid_next_word.shape) * valid_next_word), axis = 0), (-3,))
                 p = args.lambdah * cache_dist + (1 - args.lambdah) * vocab_L
             target_L = p[target]
             L += -mx.nd.log(target_L)
