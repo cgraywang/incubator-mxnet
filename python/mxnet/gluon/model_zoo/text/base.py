@@ -95,9 +95,16 @@ def _apply_weight_drop_to_rnn_layer(block, rate, weight_dropout_mode = 'training
         params._params[key] = weight_dropped_params
     for child_block in block._children:
         _apply_weight_drop_to_rnn_layer(child_block, rate, weight_dropout_mode)
-    print(params)
+#     print(params)
 
-
+def _apply_weight_drop_to_rnn_layer_test(block, rate, weight_dropout_mode = 'training'):
+    params = block.params._params
+    for key, val in params.items():
+        if 'h2h_weight' in key:
+            weight_dropped_params = WeightDropParameter(val, rate, weight_dropout_mode)
+            params[key] = weight_dropped_params
+    for child_block in block._children:
+        _apply_weight_drop_to_rnn_layer_test(child_block, rate, weight_dropout_mode)
 
 def get_rnn_layer(mode, num_layers, num_embed, num_hidden, dropout, weight_dropout, weight_dropout_mode = 'training'):
     if mode == 'rnn_relu':
