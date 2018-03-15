@@ -15,13 +15,21 @@
 # specific language governing permissions and limitations
 # under the License.
 
+# import argparse
+# import collections
+# import time
+# import math
+# import mxnet as mx
+# from mxnet import gluon, autograd
+# from mxnet.gluon import data
+# from mxnet.gluon.model_zoo.text.lm import RNNModel, AWDLSTM
+
 import argparse
-import collections
 import time
 import math
 import mxnet as mx
 from mxnet import gluon, autograd
-from mxnet.gluon import data
+from mxnet.gluon import contrib
 from mxnet.gluon.model_zoo.text.lm import RNNModel, AWDLSTM
 
 parser = argparse.ArgumentParser(description='MXNet Autograd RNN/LSTM Language Model on Wikitext-2.')
