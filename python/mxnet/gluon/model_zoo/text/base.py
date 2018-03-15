@@ -94,7 +94,7 @@ def _apply_weight_drop_to_rnn_layer_old(block, rate, weight_dropout_mode = 'trai
         weight_dropped_params = WeightDropParameter(value, rate, weight_dropout_mode)
         params._params[key] = weight_dropped_params
     for child_block in block._children:
-        _apply_weight_drop_to_rnn_layer(child_block, rate, weight_dropout_mode)
+        _apply_weight_drop_to_rnn_layer_old(child_block, rate, weight_dropout_mode)
 #     print(params)
 
 def _apply_weight_drop_to_rnn_layer(block, rate, weight_dropout_mode = 'training'):
@@ -106,7 +106,7 @@ def _apply_weight_drop_to_rnn_layer(block, rate, weight_dropout_mode = 'training
             b_params[key] = weight_dropped_params
             
     for child_block in block._children:
-        _apply_weight_drop_to_rnn_layer_test(child_block, rate, weight_dropout_mode)
+        _apply_weight_drop_to_rnn_layer(child_block, rate, weight_dropout_mode)
 
 def get_rnn_layer(mode, num_layers, num_embed, num_hidden, dropout, weight_dropout, weight_dropout_mode = 'training'):
     if mode == 'rnn_relu':
