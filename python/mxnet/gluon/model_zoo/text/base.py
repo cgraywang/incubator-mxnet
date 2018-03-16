@@ -104,8 +104,9 @@ def _apply_weight_drop_to_rnn_layer(block, rate, weight_dropout_mode = 'training
         if 'h2h_weight' in key:
 #             weight_dropped_params = WeightDropParameter(val, rate, weight_dropout_mode)
 #             b_params[key].set_data(weight_dropped_params.data())
-            d = val._check_and_get(val._data, ctx = None)
-            d = nd.Dropout(d, rate, weight_dropout_mode)
+#             d = val._check_and_get(val._data, ctx = None)
+#             d = nd.Dropout(nd.array(val._data[0]), rate, weight_dropout_mode)
+            d = nd.Dropout(val._data[0], rate, weight_dropout_mode)
             b_params[key].set_data(d)
             
     for child_block in block._children:
