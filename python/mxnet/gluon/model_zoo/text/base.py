@@ -113,21 +113,17 @@ def _apply_weight_drop_to_rnn_layer(block, rate, weight_dropout_mode = 'training
     for k, v in b_params.items():
         if 'h2h_weight' in k:
             weight_dropped_params = WeightDropParameter(v, rate, weight_dropout_mode)
-            break
-            
-    params_lst = []
-    _retrieve_params(block, params_lst)
-    print("params_lst")
-    print(params_lst)
-    for k in params_lst:
-        b_params[k] = weight_dropped_params
+            params_lst = []
+            _retrieve_params(block, params_lst)
+            for params in params_lst:
+                params[k] = weight_dropped_params
         
     
 def _retrieve_params(block, params_lst):
     b_params = block.params._params
-    for k, v in b_params.items():
+    for param in b_params:
         if 'h2h_weight' in k:
-            params_lst.append(k)
+            params_lst.append(param)
     for c_block in block._children:
         _retrieve_params(c_block, params_lst)
         
