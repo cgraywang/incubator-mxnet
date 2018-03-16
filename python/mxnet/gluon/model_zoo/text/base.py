@@ -98,24 +98,26 @@ def _apply_weight_drop_to_rnn_layer_old(block, rate, weight_dropout_mode = 'trai
 #     print(params)
 
 def _apply_weight_drop_to_rnn_layer(block, rate, weight_dropout_mode = 'training'):
-#     params = block.collect_params()
-    b_params = block.params._params
-    for key, val in b_params.items():
+    params = block.collect_params()
+#     b_params = block.params._params
+    for key, val in params.items():
         if 'h2h_weight' in key:
+            weight_dropped_params = WeightDropParameter(val, rate, weight_dropout_mode)
+            block._reg_params[key] = weight_dropped_params
 #             weight_dropped_params = WeightDropParameter(val, rate, weight_dropout_mode)
 #             b_params[key].set_data(weight_dropped_params.data())
 #             d = val._check_and_get(val._data, ctx = None)
 #             d = nd.Dropout(nd.array(val._data[0]), rate, weight_dropout_mode)
-            print("key:")
-            print(key)
-            print("val:")
-            print(val)
-            if val._data is not None:
-                print("val._data:")
-                print(val._data)
-                d = nd.Dropout(val._data[0], rate, weight_dropout_mode, axes=(0,))
-                print(d)
-                b_params[key].set_data(d)
+#             print("key:")
+#             print(key)
+#             print("val:")
+#             print(val)
+#             if val._data is not None:
+#                 print("val._data:")
+#                 print(val._data)
+#                 d = nd.Dropout(val._data[0], rate, weight_dropout_mode, axes=(0,))
+#                 print(d)
+#                 b_params[key].set_data(d)
             
     for child_block in block._children:
         _apply_weight_drop_to_rnn_layer(child_block, rate, weight_dropout_mode)
