@@ -107,6 +107,7 @@ def _apply_weight_drop_to_rnn_layer(block, rate, weight_dropout_mode = 'training
 #             d = val._check_and_get(val._data, ctx = None)
 #             d = nd.Dropout(nd.array(val._data[0]), rate, weight_dropout_mode)
             d = nd.Dropout(val._data[0], rate, weight_dropout_mode)
+            print(d)
             b_params[key].set_data(d)
             
     for child_block in block._children:
