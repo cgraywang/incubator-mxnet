@@ -127,7 +127,7 @@ def _retrieve_params(block, params_lst):
     b_params = block.params._params
     for k, v in b_params.items():
         if 'h2h_weight' in k:
-            param_name_lst.append(v)
+            params_lst.append(v)
     for c_block in block._children:
         _retrieve_params_with_name(c_block, params_lst)
         
