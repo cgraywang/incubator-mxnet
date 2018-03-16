@@ -129,7 +129,7 @@ def _retrieve_params(block, params_lst):
         if 'h2h_weight' in k:
             params_lst.append(v)
     for c_block in block._children:
-        _retrieve_params_with_name(c_block, params_lst)
+        _retrieve_params(c_block, params_lst)
         
         
 def _apply_weight_drop_to_rnn_layer_hack(block, rate, weight_dropout_mode = 'training'):
