@@ -15,7 +15,7 @@
 # specific language governing permissions and limitations
 # under the License.
 
-from ... import Block, Parameter, contrib, nn, rnn
+from ... import Block, HybridBlock, Parameter, contrib, nn, rnn
 from .... import nd
 
 
@@ -103,7 +103,8 @@ def _apply_weight_drop_to_rnn_layer(block, rate, weight_dropout_mode = 'training
     for key, val in params.items():
         if 'h2h_weight' in key:
             weight_dropped_params = WeightDropParameter(val, rate, weight_dropout_mode)
-            block._reg_params[key] = weight_dropped_params
+            if isinstance(block, HybridBlock):
+                block._reg_params[key] = weight_dropped_params
 #             weight_dropped_params = WeightDropParameter(val, rate, weight_dropout_mode)
 #             b_params[key].set_data(weight_dropped_params.data())
 #             d = val._check_and_get(val._data, ctx = None)
