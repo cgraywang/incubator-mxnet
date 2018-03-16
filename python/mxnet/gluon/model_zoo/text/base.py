@@ -113,7 +113,7 @@ def _apply_weight_drop_to_rnn_layer(block, rate, weight_dropout_mode = 'training
             if val._data is not None:
                 print("val._data:")
                 print(val._data)
-                d = nd.Dropout(val._data[0], rate, weight_dropout_mode, axes=())
+                d = nd.Dropout(val._data[0], rate, weight_dropout_mode, axes=(0,))
                 print(d)
                 b_params[key].set_data(d)
             
