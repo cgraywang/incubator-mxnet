@@ -98,17 +98,35 @@ def _apply_weight_drop_to_rnn_layer_old(block, rate, weight_dropout_mode = 'trai
 #     print(params)
 
 def _apply_weight_drop_to_rnn_layer(block, rate, weight_dropout_mode = 'training'):
+#     b_params = block.params._params
+#     for k, v in b_params.items():
+#         if 'h2h_weight' in k:
+#             weight_dropped_params = WeightDropParameter(v, rate, weight_dropout_mode)
+# #             b_params[k] = weight_dropped_params
+#             if isinstance(block, HybridBlock):
+#                 block._reg_params[k] = weight_dropped_params
+#             else:
+#                 b_params[k] = weight_dropped_params
+#     for child_block in block._children:
+#         _apply_weight_drop_to_rnn_layer(child_block, rate, weight_dropout_mode)
     b_params = block.params._params
     for k, v in b_params.items():
         if 'h2h_weight' in k:
             weight_dropped_params = WeightDropParameter(v, rate, weight_dropout_mode)
-#             b_params[k] = weight_dropped_params
-            if isinstance(block, HybridBlock):
-                block._reg_params[k] = weight_dropped_params
-            else:
-                b_params[k] = weight_dropped_params
-    for child_block in block._children:
-        _apply_weight_drop_to_rnn_layer(child_block, rate, weight_dropout_mode)
+            break
+    
+    _retrieve_params_with_name(block, param_name_lst)
+    for k in param_name_lst:
+        b_params[k] = weight_dropped_params
+        
+    
+def _retrieve_params_with_name(block, param_name_lst):
+    b_params = block.params._params
+    for k, v in b_params.items():
+        if 'h2h_weight' in k:
+            param_name_lst.append(k)
+    for c_block in block._children:
+        _retrieve_params_with_name(c_block, param_name_lst)
         
         
 def _apply_weight_drop_to_rnn_layer_hack(block, rate, weight_dropout_mode = 'training'):
