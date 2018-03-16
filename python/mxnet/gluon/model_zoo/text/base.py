@@ -98,9 +98,9 @@ def _apply_weight_drop_to_rnn_layer_old(block, rate, weight_dropout_mode = 'trai
 #     print(params)
 
 def _apply_weight_drop_to_rnn_layer(block, rate, weight_dropout_mode = 'training'):
-    params = block.collect_params()
+#     params = block.collect_params()
     b_params = block.params._params
-    for key, val in params.items():
+    for key, val in b_params.items():
         if 'h2h_weight' in key:
             weight_dropped_params = WeightDropParameter(val, rate, weight_dropout_mode)
             b_params[key].set_data(weight_dropped_params.data())
