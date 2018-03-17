@@ -87,10 +87,10 @@ def get_rnn_cell(mode, num_layers, num_embed, num_hidden,
 
     return rnn_cell
 
-def _apply_weight_drop(block, rate, weight_dropout_mode = 'training'):
+def _apply_weight_drop(block, rate, weight_dropout_mode = 'training', axes = ()):
     for k, v in block.params._params.items():
         if 'h2h_weight' in k:
-            weight_dropped_params = WeightDropParameter(v, rate, weight_dropout_mode)
+            weight_dropped_params = WeightDropParameter(v, rate, weight_dropout_mode, axes)
             params_lst = []
             _retrieve_params(block, k, params_lst)
             for params in params_lst:
@@ -139,7 +139,7 @@ def get_rnn_layer(mode, num_layers, num_embed, num_hidden, dropout, weight_dropo
         block = rnn.GRU(num_hidden, num_layers, dropout=dropout,
                        input_size=num_embed)
     if weight_dropout:
-        _apply_weight_drop(block, weight_dropout, weight_dropout_mode = weight_dropout_mode)
+        _apply_weight_drop(block, weight_dropout, weight_dropout_mode)
 
     return block
 
