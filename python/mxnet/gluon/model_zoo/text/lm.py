@@ -44,7 +44,7 @@ class AWDLSTM(_StepwiseSeq2SeqModel):
             embedding.add(nn.Embedding(len(self._in_vocab), self._embed_dim,
                                        weight_initializer=init.Uniform(0.1)))
             if self._drop_i:
-                embedding.add(nn.Dropout(self._drop_i)) # TODO variational drop
+                embedding.add(nn.Dropout(self._drop_i, axes = (0,))) # TODO variational drop
         return embedding
 
     def _get_encoder(self):
@@ -88,7 +88,7 @@ class RNNModel(_StepwiseSeq2SeqModel):
             embedding.add(nn.Embedding(len(self._in_vocab), self._embed_dim,
                                        weight_initializer=init.Uniform(0.1)))
             if self._dropout:
-                embedding.add(nn.Dropout(self._dropout))
+                embedding.add(nn.Dropout(self._dropout, axes = (0,)))
         return embedding
 
     def _get_encoder(self):

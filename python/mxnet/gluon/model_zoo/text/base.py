@@ -83,11 +83,11 @@ def get_rnn_cell(mode, num_layers, num_embed, num_hidden,
                 rnn_cell.add(rnn.DropoutCell(dropout))
 
             if weight_dropout:
-                _apply_weight_drop_to_rnn_cell(rnn_cell, rate = weight_dropout, weight_dropout_mode = weight_dropout_mode)
+                _apply_weight_drop(rnn_cell, weight_dropout, weight_dropout_mode = weight_dropout_mode)
 
     return rnn_cell
 
-def _apply_weight_drop_to_rnn_layer(block, rate, weight_dropout_mode = 'training'):
+def _apply_weight_drop(block, rate, weight_dropout_mode = 'training'):
     for k, v in block.params._params.items():
         if 'h2h_weight' in k:
             weight_dropped_params = WeightDropParameter(v, rate, weight_dropout_mode)
@@ -139,7 +139,7 @@ def get_rnn_layer(mode, num_layers, num_embed, num_hidden, dropout, weight_dropo
         block = rnn.GRU(num_hidden, num_layers, dropout=dropout,
                        input_size=num_embed)
     if weight_dropout:
-        _apply_weight_drop_to_rnn_layer(block, weight_dropout, weight_dropout_mode = weight_dropout_mode)
+        _apply_weight_drop(block, weight_dropout, weight_dropout_mode = weight_dropout_mode)
 
     return block
 
@@ -194,7 +194,7 @@ class WeightDropParameter(Parameter):
         Whether to only turn on dropout during training or to also turn on for inference.
         Options are 'training' and 'always'.
     """
-    def __init__(self, parameter, rate=0.0, mode='training'):
+    def __init__(self, parameter, rate=0.0, mode='training', axes=()):
         p = parameter
         super(WeightDropParameter, self).__init__(
                 name=p.name, grad_req=p.grad_req, shape=p._shape, dtype=p.dtype,
@@ -203,7 +203,6 @@ class WeightDropParameter(Parameter):
                 differentiable=p._differentiable)
         self._rate = rate
         self._mode = mode
-
     def data(self, ctx=None):
         """Returns a copy of this parameter on one context. Must have been
         initialized on this context before.
@@ -217,7 +216,7 @@ class WeightDropParameter(Parameter):
         """
         d = self._check_and_get(self._data, ctx)
         if self._rate:
-            d = nd.Dropout(d, self._rate, self._mode)
+            d = nd.Dropout(d, self._rate, self._mode, self._axes)
         return d
 
     def __repr__(self):
