@@ -89,14 +89,29 @@ def get_rnn_cell(mode, num_layers, num_embed, num_hidden,
     return rnn_cell
 
 
-def _apply_weight_drop_to_rnn_layer(block, rate, weight_dropout_mode = 'training'):
-    params = block.collect_params('.*_h2h_weight')
-    for key, value in params.items():
-        weight_dropped_params = WeightDropParameter(value, rate, weight_dropout_mode)
-        params._params[key] = weight_dropped_params
-    for child_block in block._children:
-        _apply_weight_drop_to_rnn_layer(child_block, rate, weight_dropout_mode)
+# def _apply_weight_drop_to_rnn_layer(block, rate, weight_dropout_mode = 'training'):
+#     params = block.collect_params('.*_h2h_weight')
+#     for key, value in params.items():
+#         weight_dropped_params = WeightDropParameter(value, rate, weight_dropout_mode)
+#         params._params[key] = weight_dropped_params
+#     for child_block in block._children:
+#         _apply_weight_drop_to_rnn_layer(child_block, rate, weight_dropout_mode)
 
+
+def _apply_weight_drop(block, rate, weight_dropout_mode = 'training'):
+    for k, v in block.params._params.items():
+        if 'h2h_weight' in k:
+            weight_dropped_params = WeightDropParameter(v, rate, weight_dropout_mode)
+            params_lst = []
+            _retrieve_params(block, k, params_lst)
+            for params in params_lst:
+                params[k] = weight_dropped_params
+    
+def _retrieve_params(block, name, params_lst):
+    if name in block.params._params:
+        params_lst.append(block.params._params)
+    for c_block in block._children:
+        _retrieve_params(c_block, name, params_lst)
 
 
 def get_rnn_layer(mode, num_layers, num_embed, num_hidden, dropout, weight_dropout, weight_dropout_mode = 'training'):
@@ -113,7 +128,8 @@ def get_rnn_layer(mode, num_layers, num_embed, num_hidden, dropout, weight_dropo
         block = rnn.GRU(num_hidden, num_layers, dropout=dropout,
                        input_size=num_embed)
     if weight_dropout:
-        _apply_weight_drop_to_rnn_layer(block, weight_dropout, weight_dropout_mode = weight_dropout_mode)
+#         _apply_weight_drop_to_rnn_layer(block, weight_dropout, weight_dropout_mode = weight_dropout_mode)
+        _apply_weight_drop(block, weight_dropout, weight_dropout_mode)
     
     return block
     
