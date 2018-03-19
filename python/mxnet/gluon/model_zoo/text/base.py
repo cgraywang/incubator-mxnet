@@ -19,9 +19,10 @@
 # from mxnet import gluon, nd
 # from mxnet.gluon import contrib, nn, rnn
 
+import mxnet as mx
+from mxnet import gluon
 from ... import Block, HybridBlock, Parameter, contrib, nn, rnn
 from .... import nd
-from ... import gluon
 
 class _StepwiseSeq2SeqModel(gluon.Block):
     def __init__(self, in_vocab, out_vocab, **kwargs):
