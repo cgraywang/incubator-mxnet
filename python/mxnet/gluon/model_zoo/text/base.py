@@ -15,10 +15,12 @@
 # specific language governing permissions and limitations
 # under the License.
 
-import mxnet as mx
-from mxnet import gluon, nd
-from mxnet.gluon import contrib, nn, rnn
+# import mxnet as mx
+# from mxnet import gluon, nd
+# from mxnet.gluon import contrib, nn, rnn
 
+from ... import Block, HybridBlock, Parameter, contrib, nn, rnn
+from .... import nd
 
 class _StepwiseSeq2SeqModel(gluon.Block):
     def __init__(self, in_vocab, out_vocab, **kwargs):
