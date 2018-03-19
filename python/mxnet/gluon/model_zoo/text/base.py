@@ -21,6 +21,7 @@
 
 from ... import Block, HybridBlock, Parameter, contrib, nn, rnn
 from .... import nd
+from ... import gluon
 
 class _StepwiseSeq2SeqModel(gluon.Block):
     def __init__(self, in_vocab, out_vocab, **kwargs):
