@@ -42,6 +42,8 @@ These models can constructed by passing ``pretrained=True``:
 .. _AWD: https://arxiv.org/abs/1404.5997
 """
 
+from .base import *
+
 from .lm import *
 
 def get_model(name, **kwargs):
