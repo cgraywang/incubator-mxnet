@@ -188,7 +188,6 @@ def train():
                     output, h = model(X, h)
                     print("dropped params:")
                     print(model.params)
-                    return
                     Ls.append(loss(mx.nd.reshape(output, (-3, -1)), mx.nd.reshape(y, (-1,))))
                     hiddens[j] = h
             for L in Ls:
@@ -196,7 +195,9 @@ def train():
             for ctx in context:
                 grads = [p.grad(ctx) for p in model.collect_params().values()]
                 gluon.utils.clip_global_norm(grads, args.clip * args.bptt * args.batch_size)
-
+            
+            return
+            
             trainer.step(args.batch_size)
 
             total_L += sum([mx.nd.sum(L).asscalar() for L in Ls])
