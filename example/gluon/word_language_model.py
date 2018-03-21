@@ -196,8 +196,6 @@ def train():
                 grads = [p.grad(ctx) for p in model.collect_params().values()]
                 gluon.utils.clip_global_norm(grads, args.clip * args.bptt * args.batch_size)
             
-            return
-            
             trainer.step(args.batch_size)
 
             total_L += sum([mx.nd.sum(L).asscalar() for L in Ls])
@@ -212,6 +210,8 @@ def train():
                     epoch, i, args.batch_size / (time.time() - start_batch_time)))
 
         mx.nd.waitall()
+        
+        return
 
         print('[Epoch %d] throughput %.2f samples/s'%(
                     epoch, (args.batch_size * nbatch_train) / (time.time() - start_epoch_time)))
