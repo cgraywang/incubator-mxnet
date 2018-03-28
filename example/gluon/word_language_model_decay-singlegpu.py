@@ -215,6 +215,8 @@ def train():
             model.collect_params().save(args.save)
             print('test loss %.2f, test ppl %.2f'%(test_L, math.exp(test_L)))
         else:
+            args.lr = args.lr*0.25
+            print('Learning rate now %f'%(args.lr))
             trainer._init_optimizer('sgd',
                                     {'learning_rate': args.lr,
                                      'momentum': 0,
