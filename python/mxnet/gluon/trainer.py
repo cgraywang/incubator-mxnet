@@ -354,12 +354,15 @@ class Trainer(object):
                             "warning and skip updating of Parameters with stale gradient" \
                             %(param.name, str(data.context)))
 
-            if self._kvstore and self._update_on_kvstore:
+            if self._kvstore:
                 if param._stype == 'default':
-                    # 'row_sparse' parameters are not pulled immediately - they're pulled
-                    # in `Block.forward`
-                    self._kvstore.pull(i, param.list_data(), priority=-i)
-                continue
+                    if self._update_on_kvstore:
+                        # 'row_sparse' parameters are not pulled immediately - they're pulled
+                        # in `Block.forward`
+                        self._kvstore.pull(i, param.list_data(), priority=-i)
+                        continue
+                    else:
+                        self._kvstore.pull(i, param.list_data(), priority=-i)
 
             for upd, arr, grad in zip(self._updaters, param.list_data(), param.list_grad()):
                 if not ignore_stale_grad or arr._fresh_grad:
