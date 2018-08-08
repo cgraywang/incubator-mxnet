@@ -261,7 +261,7 @@ class Trainer(object):
                     self._kvstore.pull(i, param.list_data(), priority=-i)
                     continue
                 else:
-                    self._kvstore.pull(i, param.list_data(), priority=-i)
+                    self._kvstore.pull(i, param.list_grad(), priority=-i)
 
             for upd, arr, grad in zip(self._updaters, param.list_data(), param.list_grad()):
                 if not ignore_stale_grad or arr._fresh_grad:
