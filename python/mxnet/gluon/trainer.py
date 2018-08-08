@@ -76,7 +76,7 @@ class Trainer(object):
             self._params.append(param)
         self._compression_params = compression_params
         optimizer_params = optimizer_params if optimizer_params else {}
-        self._scale = float(optimizer_params.get('rescale_grad', 1.0))
+        self._scale = optimizer_params.get('rescale_grad', 1.0)
         self._contexts = self._check_contexts()
         self._init_optimizer(optimizer, optimizer_params)
         self._kv_initialized = False
@@ -113,8 +113,6 @@ class Trainer(object):
         arg_arrays = {param.name: param.data(self._contexts[0]) for param in self._params}
         kvstore, update_on_kvstore = _create_kvstore(self._kvstore, len(self._contexts),
                                                      arg_arrays)
-        update_on_kvstore = self._update_on_kvstore if self._update_on_kvstore is not None \
-                            else update_on_kvstore
         if kvstore:
             if self._compression_params:
                 kvstore.set_gradient_compression(self._compression_params)
@@ -210,9 +208,6 @@ class Trainer(object):
 
                     self._kvstore.push(i, param.list_grad(), priority=-i)
 
-                    if not self._update_on_kvstore:
-                        self._kvstore.pull(i, param.list_grad(), priority=-i)
-
     def update(self, batch_size, ignore_stale_grad=False):
         """Makes one step of parameter update.
 
@@ -262,14 +257,11 @@ class Trainer(object):
                             %(param.name, str(data.context)))
 
             if self._kvstore:
-                if param._stype == 'default':
-                    if self._update_on_kvstore:
-                        # 'row_sparse' parameters are not pulled immediately - they're pulled
-                        # in `Block.forward`
-                        self._kvstore.pull(i, param.list_data(), priority=-i)
-                        continue
-                    else:
-                        self._kvstore.pull(i, param.list_data(), priority=-i)
+                if self._update_on_kvstore:
+                    self._kvstore.pull(i, param.list_data(), priority=-i)
+                    continue
+                else:
+                    self._kvstore.pull(i, param.list_data(), priority=-i)
 
             for upd, arr, grad in zip(self._updaters, param.list_data(), param.list_grad()):
                 if not ignore_stale_grad or arr._fresh_grad:
