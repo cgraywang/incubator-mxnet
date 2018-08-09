@@ -83,6 +83,8 @@ class Trainer(object):
         self._kvstore = kvstore
         self._update_on_kvstore = update_on_kvstore
 
+        print('Using trainer2!!!')
+
     def _check_contexts(self):
         contexts = None
         for param in self._params:
