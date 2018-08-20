@@ -200,6 +200,64 @@ class Trainer(object):
                     upd(i, grad, arr)
                     arr._fresh_grad = False
 
+
+    def allreduce_grads(self, batch_size, ignore_stale_grad=False):
+        if not self._kv_initialized:
+            self._init_kvstore()
+
+        self._optimizer.rescale_grad = self._scale / batch_size
+
+        for i, param in enumerate(self._params):
+            if param.grad_req == 'null':
+                continue
+            if not ignore_stale_grad:
+                for data in param.list_data():
+                    if not data._fresh_grad:
+                        raise UserWarning(
+                            "Gradient of Parameter `%s` on context %s has not been updated "
+                            "by backward since last `step`. This could mean a bug in your "
+                            "model that made it only use a subset of the Parameters (Blocks) "
+                            "for this iteration. If you are intentionally only using a subset, "
+                            "call step with ignore_stale_grad=True to suppress this "
+                            "warning and skip updating of Parameters with stale gradient" \
+                            %(param.name, str(data.context)))
+
+            if self._kvstore:
+                self._kvstore.push(i, param.list_grad(), priority=-i)
+
+    def update(self, batch_size, ignore_stale_grad=False):
+
+        self._optimizer.rescale_grad = self._scale / batch_size
+
+        for i, param in enumerate(self._params):
+            if param.grad_req == 'null':
+                continue
+            if not ignore_stale_grad:
+                for data in param.list_data():
+                    if not data._fresh_grad:
+                        raise UserWarning(
+                            "Gradient of Parameter `%s` on context %s has not been updated "
+                            "by backward since last `step`. This could mean a bug in your "
+                            "model that made it only use a subset of the Parameters (Blocks) "
+                            "for this iteration. If you are intentionally only using a subset, "
+                            "call step with ignore_stale_grad=True to suppress this "
+                            "warning and skip updating of Parameters with stale gradient" \
+                            %(param.name, str(data.context)))
+
+            if self._kvstore:
+                if self._update_on_kvstore:
+                    self._kvstore.pull(i, param.list_data(), priority=-i)
+                    continue
+                else:
+                    self._kvstore.pull(i, param.list_grad(), priority=-i)
+
+            for upd, arr, grad in zip(self._updaters, param.list_data(), param.list_grad()):
+                if not ignore_stale_grad or arr._fresh_grad:
+                    upd(i, grad, arr)
+                    arr._fresh_grad = False
+
+
+
     def save_states(self, fname):
         """Saves trainer states (e.g. optimizer, momentum) to a file.
 
