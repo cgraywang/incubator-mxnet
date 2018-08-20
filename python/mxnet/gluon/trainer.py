@@ -188,7 +188,7 @@ class Trainer(object):
 
         Should be called after `autograd.backward()`, outside of `record()` scope,
         and before `trainer.update()`.
-
+    
         For normal parameter updates, `step()` should be used, which internally calls
         `allreduce_grads()` and then `update()`. However, if you need to get the reduced
         gradients to perform certain transformation, such as in gradient clipping, then
