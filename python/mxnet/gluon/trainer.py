@@ -79,6 +79,8 @@ class Trainer(object):
         self._kv_initialized = False
         self._kvstore = kvstore
 
+        print('use updated trainer0820')
+
     def _check_contexts(self):
         contexts = None
         for param in self._params:
